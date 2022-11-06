@@ -16,7 +16,7 @@ class WadArchiveDatabase():
     
     def getPagedFilenames(self, page_size,page_num):
         pagination_data = {
-            'page_count' : self.getFilecount(),
+            'item_count' : self.getFilecount(),
             'page_num' : page_num,
             'page_size' : page_size,
             'page_data' : list(self.db['filenames'].find({}).sort('_id',1).skip(page_size * page_num).limit(page_size))

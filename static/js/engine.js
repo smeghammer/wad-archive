@@ -30,10 +30,7 @@ let engine = {
   });
 	 */
 	loadFiles: function(){
-		
-		/** may need to load this asynchronously */
-		//this.getFileCount();
-		
+
 		/** look for pagination flags */
 		let pageSize = document.getElementById('body').getAttribute('data-page-size');
 		console.log(pageSize);
@@ -44,35 +41,26 @@ let engine = {
 			return(data);
 		})
 		.then(function(json_data){
-			//console.log(json_data);
-			engine.buildFileLinks(json_data)
-			/** and load the filecount */
-			 //return( engine.getFileCount() );
+			console.log(json_data);
+			engine.buildFileLinks(json_data);
+			engine.buildPaginator(json_data.page_num,json_data.page_size,json_data.item_count);
 		})
-		//.then(function(filecount){
-		//	engine.fileCount =  filecount;
-		//	console.log(engine.fileCount);
-		//})
 	},
 	
-//	getFileCount : function(){
-//		fetch('/app/count')
-//		.then(function(response){
-//			data = response.text();
-//			return(data);
-//		})
-//		.then(function(count_data){
-//			console.log(count_data);
-//			return(count_data);
-//		})
-//	},
-	
 	buildPaginator : function(currentPage, pageSize, recordCount){
+		console.log(currentPage, pageSize, recordCount);
+		
+		let num_pages = math.ceil(recordCount/pageSize);
+		if(currentPage < num_pages){
+			// make next link
+		}
+		if(currentPage > 0){
+			// make prev link
+		}
 		
 	},
 	
 	buildFileLinks : function(fileData){
-		//console.log(fileData)
 		/** empty the container */
 		let elem = document.getElementById('filelist')
 		elem.innerHTML = "";
@@ -81,7 +69,6 @@ let engine = {
 			console.log(fileData.page_data[counter]);
 			let test = document.createElement('li');
 			test.appendChild(this.buildFileLink(fileData.page_data[counter]._id,fileData.page_data[counter]['filenames'][0]));
-			test.appendChild(document.createTextNode(fileData.page_data[counter]['filenames'][0]));
 			_ul.appendChild(test);
 		}
 		elem.appendChild(_ul);
@@ -90,9 +77,21 @@ let engine = {
 	buildFileLink : function(fileguid, filename){
 		let _linkelem = document.createElement('a');
 		_linkelem.setAttribute('href','/app/file/' + fileguid);
-		_linkelem.setAttribute('title','Download' + filename);
+		_linkelem.setAttribute('title','Download ' + filename);
 		_linkelem.appendChild(document.createTextNode(filename));
 		return(_linkelem);
+	},
+	
+	buildPaginationLink : function(direction, currentPage, recordcount){
+		let newpage = currentPage;
+		switch(direction){
+			case -1:	//back
+				newpage--;
+			break;
+			case 1:		//forward
+				newpage++;
+			break;
+		}
 	}
 	
 }
