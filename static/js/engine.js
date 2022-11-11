@@ -41,7 +41,7 @@ let engine = {
 		if(pageNum >= num_pages){
 			pNum = num_pages-1;
 		}
-		/** look for pagination flags */
+		/** look for pagination flags */;
 		let pageSize = document.getElementById('body').getAttribute('data-page-size');
 		console.log(pageSize);
 		fetch('/app/files/'+pageSize + '/' + pNum + f)
@@ -57,7 +57,7 @@ let engine = {
 		});
 	},
 	
-	//http://127.0.0.1:5000/app/files/20/0
+	//http://127.0.0.1:5000/app/files/20/0 - todo: refactor to remove redundant pageSixe arg
 	buildPaginator : function(currentPage, pageSize, recordCount){
 		
 		let num_pages = Math.ceil(recordCount/pageSize);
@@ -90,7 +90,7 @@ let engine = {
 		prevtag2.appendChild(document.createTextNode(' << '));
 		nexttag2.appendChild(document.createTextNode(' >> '));
 		filecount.innerHTML = '';
-		filecount.appendChild(document.createTextNode(recordCount));
+		filecount.appendChild(document.createTextNode(recordCount + ' files'));
 		console.log(currentPage, pageSize,num_pages, recordCount);
 		if(currentPage < num_pages){
 			// make next link

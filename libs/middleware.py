@@ -20,7 +20,6 @@ class Middleware():
             f = {'filenames.0':{'$regex':filter}}
         return self.db.getPagedFilenames(page_size,page_num, f)
     
-    
     def file(self,guid,type='wad'):
         ''' I can get teh type from the filenames extension '''
         print(guid)
@@ -56,14 +55,7 @@ class Middleware():
                         return outfile, file_name
             except FileNotFoundError as err:
                 print(err," giving up..")
-                
-        
-        # if file:
-        #     return_file = file
-        #     # uncompress it first:
-        #     uncompressed_return_file = return_file.read()
-        #     outfile = io.BytesIO(uncompressed_return_file)
-        #     return outfile, file_name
+
         return None, None
     
     def _get_dir_name(self,guid):
