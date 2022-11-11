@@ -6,8 +6,8 @@ from libs.database import WadArchiveDatabase
 
 class Middleware():
     
-    def __init__(self):
-        self.db = WadArchiveDatabase()
+    def __init__(self,settings):
+        self.db = WadArchiveDatabase(settings)
         self.path_to_archives = 'E:\wad-archive dump\DATA'
         
     def filecount(self):

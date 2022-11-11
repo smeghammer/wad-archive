@@ -1,6 +1,8 @@
 import pymongo
 import requests
+from config.settings import settings
 from libs.database import WadArchiveDatabase
+
 
 
 import json
@@ -12,7 +14,7 @@ app = Flask(__name__,
             static_folder='static'
             # ,template_folder='templates'
             )
-mware = Middleware()
+mware = Middleware(settings)
     
 @app.route('/')
 @app.route('/index')
@@ -36,7 +38,8 @@ def filecount():
 @app.route('/app/files/<int:page_size>/<int:page_num>')
 def pagedfiles(page_size,page_num):
     filter = request.args.get('filter', default = None, type = str)
-    result = mware.files(page_size,page_num, filter)
+    # result = mware.files(page_size,page_num, filter)
+    result = mware.files(settings['records_per_page'],page_num, filter)
     return result
     # return mware.files(page_size,page_num, filter)
 

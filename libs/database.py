@@ -1,18 +1,15 @@
 from pymongo import MongoClient
 
-
 class WadArchiveDatabase():
     
-    def __init__(self):
+    def __init__(self,settings):
         ''' instantiate the database object '''
         print('init database')
-        self.db = MongoClient().wadarchive
+        print(settings)
+        self.db = MongoClient(host=''.join([settings['metadata_database_address'],':',str(settings['metadata_database_port'])]))[settings['metadata_database_name']]
     
     def getFilecount(self,filter):
         return self.db['filenames'].count_documents(filter)
-    
-    # def getFilenames(self):
-    #     return self.db['filenames'].find({}).sort('_id',1)
     
     def getPagedFilenames(self, page_size,page_num, filter):
         filter = filter
