@@ -8,18 +8,19 @@ class WadArchiveDatabase():
         print('init database')
         self.db = MongoClient().wadarchive
     
-    def getFilecount(self):
-        return self.db['filenames'].count_documents({})
+    def getFilecount(self,filter):
+        return self.db['filenames'].count_documents(filter)
     
     # def getFilenames(self):
     #     return self.db['filenames'].find({}).sort('_id',1)
     
-    def getPagedFilenames(self, page_size,page_num):
+    def getPagedFilenames(self, page_size,page_num, filter):
+        filter = filter
         pagination_data = {
-            'item_count' : self.getFilecount(),
+            'item_count' : self.getFilecount(filter),
             'page_num' : page_num,
             'page_size' : page_size,
-            'page_data' : list(self.db['filenames'].find({}).sort('_id',1).skip(page_size * page_num).limit(page_size))
+            'page_data' : list(self.db['filenames'].find(filter).sort('_id',1).skip(page_size * page_num).limit(page_size))
             }
         return pagination_data
     

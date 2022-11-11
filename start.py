@@ -4,7 +4,7 @@ from libs.database import WadArchiveDatabase
 
 
 import json
-from flask import Flask, jsonify, send_file, render_template
+from flask import Flask, jsonify, send_file, render_template, request
 
 from libs.middleware import Middleware
 
@@ -18,7 +18,7 @@ mware = Middleware()
 @app.route('/index')
 def index():
     # return jsonify({'root':'test'})
-    return render_template('index.html', title='Welcome!!')
+    return render_template('index.html', title='WAD Archive')
 
 @app.route('/app')
 def approot():
@@ -32,12 +32,14 @@ def filecount():
 # def files():
 #     return mware.files()
 
+# https://www.folkstalk.com/2022/10/flask-arguments-in-url-with-code-examples.html
 @app.route('/app/files/<int:page_size>/<int:page_num>')
 def pagedfiles(page_size,page_num):
-    
-    _TEST = mware.files(page_size,page_num)
-    
-    return mware.files(page_size,page_num)
+    filter = request.args.get('filter', default = None, type = str)
+    result = mware.files(page_size,page_num, filter)
+    return result
+    # return mware.files(page_size,page_num, filter)
+
 
 # https://stackoverflow.com/questions/57564873/how-to-download-in-memory-zip-file-object-using-flask-send-file
 @app.route('/app/file/<guid>')
