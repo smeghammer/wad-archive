@@ -28,3 +28,13 @@ class WadArchiveDatabase():
         if res['count']:
             return res['filenames'][0]
         return 'No filename found!'
+    
+    def readme(self,uuid):
+        try:
+            res = dict(
+                self.db['readmes'].find_one({'_id':uuid}))
+            if res['count']:
+                # data = res['readmes'][0]
+                return res['readmes'][0]
+        except Exception as ex:
+            return 'No readmes found!'

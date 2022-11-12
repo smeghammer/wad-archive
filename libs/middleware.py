@@ -8,7 +8,7 @@ class Middleware():
     
     def __init__(self,settings):
         self.db = WadArchiveDatabase(settings)
-        self.path_to_archives = 'E:\wad-archive dump\DATA'
+        self.path_to_archives = settings['archive_root_path']
         
     def filecount(self):
         return self.db.getFilecount()
@@ -20,17 +20,32 @@ class Middleware():
             f = {'filenames.0':{'$regex':filter}}
         return self.db.getPagedFilenames(page_size,page_num, f)
     
+    def details(self,guid):
+        details = {
+            'record_identifier':guid,
+            'record_filename':self.db.getFilename(guid),
+            'record_path':self.path(guid),
+            'record_readme':self.readme(guid),
+            ''' for each of these, build the dirs and test for existence and - if found - get the files inside. Test them
+            for type .png and return the binaries for each '''
+            'record_graphics' : [],
+            'record_maps' : [],
+            'record_screenshots' : []
+        }
+        return details
+    
     def file(self,guid,type='wad'):
         ''' I can get teh type from the filenames extension '''
-        print(guid)
+        print('in middleware.file, ',guid)
         file_name = self.db.getFilename(guid)
-        # open the folder conaining the archives
-        archives_path = path.join(self.path_to_archives,guid[0:2:1],guid[2:])
-        
+        # # open the folder conaining the archives
+        file_dir = guid[0:2:1]
+        file_name_prefix = guid[2:]
+        # archives_path = path.join(self.path_to_archives,guid[0:2:1],guid[2:])
+        archives_path = self.path(guid)
         # open the zipped file (folder/folder/fname). need to test for .wad.gz and .pk3.gz
-        try_pk3 = path.join(archives_path, ''.join([guid[0:2:1], guid[2:], '.pk3.gz']))
-        try_wad =  path.join(archives_path, ''.join([guid[0:2:1], guid[2:], '.wad.gz']))
-        try_zip =  path.join(archives_path, ''.join([guid[0:2:1], guid[2:], '.zip']))
+        try_pk3 = path.join(archives_path, ''.join([file_dir, file_name_prefix, '.pk3.gz']))
+        try_wad =  path.join(archives_path, ''.join([file_dir, file_name_prefix, '.wad.gz']))
         # return try_pk3
         try:
             with gzip.open(path.join(archives_path,try_pk3),mode='rb') as file:
@@ -58,5 +73,13 @@ class Middleware():
 
         return None, None
     
-    def _get_dir_name(self,guid):
-        return guid[0,2,1]
+    def readme(self,guid):
+        return self.db.readme(guid)
+    
+    def path(self,guid):
+        file_name = self.db.getFilename(guid)
+        file_dir = guid[0:2:1]
+        file_name_prefix = guid[2:]
+        archives_path = path.join(self.path_to_archives,guid[0:2:1],guid[2:])
+        return archives_path
+    

@@ -2,6 +2,29 @@
 	font-family:arial,sans-serif;
 }
 
+#searchbox, #filelist, #filecount, #paginator{
+/* 	border: 1px solid red; */
+	width: 30%;
+/* 	min-width: 320px; */
+}
+
 a.paginator_prev:hover,a.paginator_next:hover{
 	cursor: pointer;
+}
+
+div.content{
+	width: 70%;
+	float:right;
+/* 	border: 1px solid blue; */
+	top: 0px;
+    position: absolute;
+    right: 0px;
+    height: 100%;
+}
+
+/* https://developer.mozilla.org/en-US/docs/Web/CSS/white-space */
+div#detail_readme{
+	font-family: courier, monospace;
+	font-size: 0.9em;
+	white-space: pre;
 }

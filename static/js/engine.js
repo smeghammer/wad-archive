@@ -13,9 +13,9 @@ let engine = {
 			btn.addEventListener('click',function(){
 				engine.loadFiles(0,document.getElementById('searchfield').value);
 			});	
-				this.loadFiles();
-				break;
-				default:
+			this.loadFiles();
+			break;
+			default:
 		}
 	},
 	
@@ -92,12 +92,12 @@ let engine = {
 		filecount.innerHTML = '';
 		filecount.appendChild(document.createTextNode(recordCount + ' files'));
 		console.log(currentPage, pageSize,num_pages, recordCount);
-		if(currentPage < num_pages){
+/*		if(currentPage < num_pages){
 			// make next link
 		}
 		if(currentPage > 0){
 			// make prev link
-		}
+		}*/
 		//https://gomakethings.com/listening-for-click-events-with-vanilla-javascript/
 		prevtag.addEventListener('click',function(){
 			engine.loadFiles((parseInt(currentPage) - 1),document.getElementById('searchfield').value, num_pages);
@@ -137,14 +137,55 @@ let engine = {
 		elem.appendChild(_ul);
 	},
 	
-	buildFileLink : function(fileguid, filename){
+	buildFileLink : function(fileguid, filename,isDownloadLink){
 		let _linkelem = document.createElement('a');
-		_linkelem.setAttribute('href','/app/file/' + fileguid);
-		_linkelem.setAttribute('title','Download ' + filename);
+		_linkelem.setAttribute('data-fileguid',fileguid);
+		if(isDownloadLink){
+			_linkelem.setAttribute('href','/app/file/' + fileguid);
+			_linkelem.setAttribute('title','Download ' + filename);
+		}
+		else{
+			_linkelem.setAttribute('href','#');
+			_linkelem.setAttribute('title','Details for ' + filename);
+			_linkelem.addEventListener('click',function(){
+				engine.buildFileDetails(this.getAttribute('data-fileguid'));
+			});
+		}
+
 		_linkelem.appendChild(document.createTextNode(filename));
 		return(_linkelem);
 	},
 	
+	buildFileDetails : function(fileguid){
+		console.log('get details by this: ',fileguid);
+		fetch('/app/file/details/' + fileguid)
+		.then(function(response){
+			/** NOTE: return the filecount as part of the pagination response data! */
+			data = response.json();
+			console.log(data)
+			return(data);
+		})
+		.then(function(json_data){
+			console.log(json_data);
+			/** empty the containers */
+			document.getElementById('detail_name').innerHTML = '';
+			document.getElementById('detail_readme').innerHTML = '';
+			document.getElementById('detail_download').innerHTML = '';
+			document.getElementById('detail_maps').innerHTML = '';
+			document.getElementById('detail_screenshots').innerHTML = '';
+			document.getElementById('detail_graphics').innerHTML = '';
+			
+			document.getElementById('detail_name').appendChild(document.createTextNode(json_data['record_filename']));
+			let linkElem = engine.buildFileLink(json_data['record_identifier'],json_data['record_filename'],true);
+			document.getElementById('detail_download').appendChild(linkElem);
+			//https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
+			document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
+			
+			//this.buildFileLink(fileData.page_data[counter]._id,fileData.page_data[counter]['filenames'][0])
+		});
+		/** get the heading block and pushin the filename (trimmed) */
+	},
+
 	buildPaginationLink : function(direction, currentPage, filecount){
 		let newpage = currentPage;
 		switch(direction){
@@ -156,7 +197,6 @@ let engine = {
 			break;
 		}
 	}
-	
 }
 console.log('script loaded');
 engine.init();
