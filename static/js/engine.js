@@ -1,5 +1,6 @@
 let engine = {
-
+	
+	currentdata : [],
 	fileCount : -1,
 	init : function(){
 		console.log('in init');
@@ -181,9 +182,83 @@ let engine = {
 			//https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
 			document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
 			
+//			document.getElementById('detail_maps').appendChild(engine.buildImages(json_data['record_maps'],'MAPS'));
+//			document.getElementById('detail_screenshots').appendChild(engine.buildImages(json_data['record_screenshots'],'SCREENSHOTS'));
+//			document.getElementById('detail_graphics').appendChild(engine.buildImages(json_data['record_graphics'],'GRAPHICS'));
+			
+			document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
+			document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
+			document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
+			
 			//this.buildFileLink(fileData.page_data[counter]._id,fileData.page_data[counter]['filenames'][0])
 		});
 		/** get the heading block and pushin the filename (trimmed) */
+	},
+	
+	/**  */
+	buildImages : function(data){
+		console.log(data);
+		let _ul = document.createElement('ul');
+		for(a=0;a<data.data.length;a++){
+			let _li = document.createElement('li');
+			let _img = this.buildImage(data.data[a]);
+			_li.appendChild(_img);
+			_ul.appendChild(_li);
+		}
+		return(_ul);
+	},
+	
+	/** rather than build all image up front, build ONE image and a paginator */
+	buildImagePaginator : function(data,set){
+		console.log(data);
+		/** pusg the current data to the working object: */
+		this.currentdata[set] = data;
+		let _wrapper = document.createElement('div');
+		if(data.data && data.data.length>1){
+			let _imgwrapper = document.createElement('div');
+			let _img = this.buildImage(data.data[0]);
+			_img.setAttribute('id','currentimage_' + set);
+			_imgwrapper.appendChild(_img);
+			_wrapper.appendChild(_imgwrapper)
+			let _paginatorwrapper = document.createElement('div');
+			let _ul = document.createElement('ul');
+			
+			for(let a=0;a<data.data.length;a++){
+				let _li = document.createElement('li');
+				let _a = document.createElement('span');
+				_a.setAttribute('data-itemnum',a);
+				_a.setAttribute('data-set',set);
+				if(a===0){
+					_a.setAttribute('style','font-weight: bold;');
+				}
+				/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
+//				_a.setAttribute('href','#/');
+				_a.appendChild(document.createTextNode(a));
+				
+				_li.appendChild(_a);
+				_ul.appendChild(_li);
+				
+				_a.addEventListener('click',function(){
+					for (const elem of this.parentElement.parentElement.childNodes){
+						console.log(elem)
+						elem.firstChild.setAttribute('style','');
+					}
+					let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
+					img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
+					this.setAttribute('style','font-weight:bold;')
+				});
+			}
+			_paginatorwrapper.appendChild(_ul);
+			_wrapper.appendChild(_paginatorwrapper);
+		}
+		return(_wrapper);
+	},
+
+	buildImage : function(data){
+		let _img = document.createElement('img');
+		_img.setAttribute('title',data['file']);
+		_img.setAttribute('src','data:image/png;base64,'+data['b64']);
+		return(_img);
 	},
 
 	buildPaginationLink : function(direction, currentPage, filecount){

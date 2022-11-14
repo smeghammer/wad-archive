@@ -1,5 +1,6 @@
 import io
 import os
+import base64
 from os import path
 import gzip
 from libs.database import WadArchiveDatabase
@@ -26,11 +27,9 @@ class Middleware():
             'record_filename':self.db.getFilename(guid),
             'record_path':self.path(guid),
             'record_readme':self.readme(guid),
-            ''' for each of these, build the dirs and test for existence and - if found - get the files inside. Test them
-            for type .png and return the binaries for each '''
-            'record_graphics' : [],
-            'record_maps' : [],
-            'record_screenshots' : []
+            'record_graphics' : self.b64imagelist(guid, 'GRAPHICS'),
+            'record_maps' : self.b64imagelist(guid, 'MAPS'),
+            'record_screenshots' : self.b64imagelist(guid, 'SCREENSHOTS')
         }
         return details
     
@@ -72,6 +71,39 @@ class Middleware():
                 print(err," giving up..")
 
         return None, None
+    
+    def b64imagelist(self,guid,dir):
+        ''' return a list of base64 encoded files (assume .pngs only) in the specified directory '''
+        _out = {}
+        #build path
+        filepath = path.join(self.path(guid),dir)
+        _out['path'] = filepath
+        _out['data'] = []
+        #test for files in path
+        try:
+            _files = os.listdir(filepath)
+            for _f in _files:
+                print('trying ',os.path.join(filepath,_f))
+                with open(os.path.join(filepath,_f),'rb') as image:
+                    if image:
+    
+                        _img = image.read()
+                        _b64 = base64.b64encode(_img)
+                        _decoded = _b64.decode('ascii')
+                        print('B64 encoded: ',_b64.decode('ascii'))
+                        _out['data'].append(
+                            {'file':_f,
+                             'b64': _decoded
+                        # base64.b64encode(  image.read() ).decode('ascii')
+                             }
+                        )
+                    else:
+                        print(os.path.join(filepath,_f),' not opened!')
+        except FileNotFoundError as ex:
+            print('dir not found')
+            return {}
+        #return b64 encoded strings for each as a list
+        return _out
     
     def readme(self,guid):
         return self.db.readme(guid)
