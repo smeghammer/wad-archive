@@ -19,7 +19,7 @@ def index():
     '''
     endpoint for returning rendered template homepage
     '''
-    return render_template('index.html', title='WAD Archive')
+    return render_template('index.html', title='WAD Archive Wrapper')
 
 @app.route('/app')
 def approot():
@@ -64,6 +64,33 @@ def readme(guid):
 @app.route('/app/file/details/<guid>')
 def details(guid):
     return mware.details(guid)
+
+#return image binary src as list of:
+#
+# [{'filename':'MAP01.png', 'data':'base64string'}]
+#
+#
+#
+#https://stackoverflow.com/questions/11017466/flask-to-return-image-stored-in-database
+#and
+#https://stackoverflow.com/questions/3715493/encoding-an-image-file-with-base64
+# load from path
+@app.route('/app/file/screenshots/<guid>')
+def screenshots(guid):
+    ''' returns a list of b64 encoded images '''
+    return mware.b64imagelist(guid,'SCREENSHOTS')
+
+@app.route('/app/file/maps/<guid>')
+def maps(guid):
+    ''' returns a list of b64 encoded images '''
+    return mware.b64imagelist(guid,'MAPS')
+
+
+@app.route('/app/file/graphics/<guid>')
+def graphics(guid):
+    ''' returns a list of b64 encoded images '''
+    return mware.b64imagelist(guid,'GRAPHICS')
+
 
 app.run()
 

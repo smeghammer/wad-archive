@@ -142,8 +142,11 @@ let engine = {
 		let _linkelem = document.createElement('a');
 		_linkelem.setAttribute('data-fileguid',fileguid);
 		if(isDownloadLink){
+			let _img = document.createElement('img');
+			_img.setAttribute('src','/static/images/dl-anim.gif');
 			_linkelem.setAttribute('href','/app/file/' + fileguid);
 			_linkelem.setAttribute('title','Download ' + filename);
+			_linkelem.appendChild(_img)
 		}
 		else{
 			_linkelem.setAttribute('href','#');
@@ -151,9 +154,10 @@ let engine = {
 			_linkelem.addEventListener('click',function(){
 				engine.buildFileDetails(this.getAttribute('data-fileguid'));
 			});
+			_linkelem.appendChild(document.createTextNode(filename));
 		}
 
-		_linkelem.appendChild(document.createTextNode(filename));
+		
 		return(_linkelem);
 	},
 	
@@ -177,16 +181,23 @@ let engine = {
 			document.getElementById('detail_graphics').innerHTML = '';
 			
 			document.getElementById('detail_name').appendChild(document.createTextNode(json_data['record_filename']));
+			
 			let linkElem = engine.buildFileLink(json_data['record_identifier'],json_data['record_filename'],true);
-			document.getElementById('detail_download').appendChild(linkElem);
+			document.getElementById('detail_name').appendChild(linkElem);
+//			document.getElementById('detail_download').appendChild(linkElem);
 			//https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
-			document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
+			if(json_data['record_readme']){
+				document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
+			}
 			
 //			document.getElementById('detail_maps').appendChild(engine.buildImages(json_data['record_maps'],'MAPS'));
 //			document.getElementById('detail_screenshots').appendChild(engine.buildImages(json_data['record_screenshots'],'SCREENSHOTS'));
 //			document.getElementById('detail_graphics').appendChild(engine.buildImages(json_data['record_graphics'],'GRAPHICS'));
 			
-			document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
+			if(json_data['record_maps']){
+				document.getElementById('detail_maps').classList.remove('hidden').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
+			}
+			
 			document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
 			document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
 			

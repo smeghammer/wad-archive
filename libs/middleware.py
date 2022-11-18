@@ -72,37 +72,29 @@ class Middleware():
 
         return None, None
     
+    ''' I actually want to reurn all images INDEXES, but just the FIRST binary, and subsequently load the images as I call them, below '''
     def b64imagelist(self,guid,dir):
         ''' return a list of base64 encoded files (assume .pngs only) in the specified directory '''
         _out = {}
-        #build path
         filepath = path.join(self.path(guid),dir)
         _out['path'] = filepath
         _out['data'] = []
-        #test for files in path
         try:
             _files = os.listdir(filepath)
             for _f in _files:
                 print('trying ',os.path.join(filepath,_f))
                 with open(os.path.join(filepath,_f),'rb') as image:
                     if image:
-    
                         _img = image.read()
                         _b64 = base64.b64encode(_img)
                         _decoded = _b64.decode('ascii')
                         print('B64 encoded: ',_b64.decode('ascii'))
-                        _out['data'].append(
-                            {'file':_f,
-                             'b64': _decoded
-                        # base64.b64encode(  image.read() ).decode('ascii')
-                             }
-                        )
+                        _out['data'].append({'file':_f, 'b64': _decoded  }  )
                     else:
                         print(os.path.join(filepath,_f),' not opened!')
         except FileNotFoundError as ex:
             print('dir not found')
             return {}
-        #return b64 encoded strings for each as a list
         return _out
     
     def readme(self,guid):

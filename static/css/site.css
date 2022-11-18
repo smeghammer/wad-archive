@@ -1,5 +1,92 @@
+@font-face {
+    font-family: "AmazDooMLeft";
+    src: url("/fonts/AmazDooMLeft.woff2") format('woff2'),
+        url("/fonts/AmazDooMLeft.woff") format('woff'),
+        url("/fonts/AmazDooMLeft.ttf") format('truetype'),
+        url("/fonts/AmazDooMLeft.svg") format('svg');
+}
+/*@font-face {
+    font-family: "AmazDooMLeft";
+    src: url("/fonts/AmazDooMLeft.woff") format('woff');
+}*/
+@font-face {
+    font-family: "AmazDooMLeftOutline";
+    src: url("/fonts/AmazDooMLeftOutline.woff2") format('woff2'),
+        url("/fonts/AmazDooMLeftOutline.woff") format('woff'),
+        url("/fonts/AmazDooMLeftOutline.ttf") format('truetype'),
+        url("/fonts/AmazDooMLeftOutline.svg") format('svg');
+}
+@font-face {
+    font-family: "AmazDooMRight";
+    src: url("/fonts/AmazDooMRight.woff") format('woff');
+}
+@font-face {
+    font-family: "AmazDooMRight2";
+    src: url("/fonts/AmazDooMRight2.woff") format('woff');
+}
+@font-face {
+    font-family: "AmazDooMRightOutline";
+    src: url("/fonts/AmazDooMRightOutline.woff") format('woff');
+}
+@font-face {
+    font-family: "DooM";
+    src: url("/fonts/DooM.woff") format('woff');
+}
+
+body{
+	background-color: #000;
+	background-image: linear-gradient(to left, darkred,black,black,black,black,black,black,black, darkred);
+}
+div{
+/* 	border: 1px solid red; */
+}
+
+div.paddedredborder{
+	border: 1px solid red;
+	margin: 5px;
+	padding: 5px;
+}
+
+#searchbtn{
+	color: red;
+}
+div.content > h2{
+	text-align: center;
+	text-decoration: underline;
+	text-transform: uppercase;
+}
+#filelist ul > li{
+	color: #000;
+	list-style-type: none;
+}
+#filelist ul > li > a{
+	color: white;
+	text-decoration: none;
+}
+#filelist ul > li:hover{
+	color: #c00000;
+	list-style-type: disclosure-closed;
+}
+#filelist ul > li > a:hover{
+	text-decoration: underline;
+}
+h1 {
+    color: #c00000;
+    font-family: AmazDooMLeftOutline;
+    letter-spacing: 0.2em;
+    margin-top: 30px;
+    margin-bottom: -10px;
+    text-align: center;
+    font-size: 6em;
+}
+
+h2{
+	color: #c00000;
+}
+
 *{
 	font-family:arial,sans-serif;
+	color: white;
 }
 
 #searchbox, #filelist, #filecount, #paginator{
@@ -12,11 +99,11 @@ a.paginator_prev:hover,a.paginator_next:hover{
 
 div.content{
 	width: 70%;
-	float:right;
-	top: 0px;
+    float: right;
+    top: 151px;
     position: absolute;
     right: 0px;
-    height: 100%;
+/*     height: 100%; */
 }
 
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/white-space */
@@ -24,6 +111,17 @@ div#detail_readme{
 	font-family: courier, monospace;
 	font-size: 0.9em;
 	white-space: pre;
+}
+
+#detail_name img{
+	width: 25px;
+    position: relative;
+    top: 3px;
+    padding-left: 5px;
+}
+
+.hidden{
+	display: none;
 }
 
 div.detail > div > div > img{

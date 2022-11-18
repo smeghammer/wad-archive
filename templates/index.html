@@ -5,7 +5,9 @@
         <link href="/static/css/site.css" rel="stylesheet" type="text/css"/>
 	</head>
 	<body id="body" data-init-action="list-files" data-page-size="30" data-page-start="0">
+		<div>
 		<h1>{{title}}</h1>
+		</div>
 		<div id="searchbox">
 		<input type="text" name="searchbox" id="searchfield" />
 		<input id="searchbtn" type="button" name="Search" value="Search" title="Filter file names by this value"/>
@@ -19,18 +21,21 @@
 		<div id="paginator">
 		
 		</div>
-		<div class="content">
-			<h2 id=detail_name>WAD NAME</h2>
-			<div id='detail_download'>DOWNLOAD</div>
-			<div class="detail" id='detail_readme'>README</div>
-			<h2>Maps</h2>
+		<div class="content paddedredborder">
+			<h2 id=detail_name></h2><div id='detail_download'></div>
+<!-- 
+			<h2>README</h2> -->
+			<div class="detail" id='detail_readme'></div>
 			
+			<h2 id='maps_heading' class='hidden'>Maps</h2>
 			
-			<div class="detail" id=detail_maps>MAPS</div>
-			<h2>Screenshots</h2>
-			<div class="detail" id=detail_screenshots>SCREENSHOTS</div>
-			<h2>Graphics</h2>
-			<div class="detail" id=detail_graphics>GRAPHICS</div>
+			<div class="detail" id=detail_maps></div>
+			
+			<h2 id='screenshots_heading' class='hidden'>Screenshots</h2>
+			<div class="detail" id=detail_screenshots></div>
+			
+			<h2 id='screenshots_heading' class='hidden'>Graphics</h2>
+			<div class="detail" id=detail_graphics></div>
 		</div>
 		<script src="/static/js/engine.js" type="text/javascript"></script>
 	</body>
