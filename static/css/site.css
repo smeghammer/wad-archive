@@ -44,7 +44,7 @@ div{
 div.paddedredborder{
 	border: 1px solid red;
 	margin: 5px;
-	padding: 5px;
+/* 	padding: 5px; */
 }
 
 #searchbtn{
@@ -67,6 +67,12 @@ div.content > h2{
 	color: #c00000;
 	list-style-type: disclosure-closed;
 }
+
+#filelist ul > li.active{
+	color: #c00000;
+	list-style-type: disclosure-closed;
+}
+
 #filelist ul > li > a:hover{
 	text-decoration: underline;
 }
@@ -111,6 +117,7 @@ div#detail_readme{
 	font-family: courier, monospace;
 	font-size: 0.9em;
 	white-space: pre;
+	padding: 5px;
 }
 
 #detail_name img{
@@ -128,6 +135,10 @@ div.detail > div > div > img{
 	width: 100%;
 }
 
+div.detail > div > div > ul{
+	padding-left: 0px;
+}
+
 div.detail > div > div > ul > li{
 	display: inline-block;
 	padding-left: 20px;
@@ -135,6 +146,7 @@ div.detail > div > div > ul > li{
 
 div.detail > div > div > ul > li:hover{
 	cursor: pointer;
+	text-decoration: underline;
 }
 
 div.detail > ul > li > img{

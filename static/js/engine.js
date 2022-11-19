@@ -65,12 +65,9 @@ let engine = {
 		let paginator = document.createElement('div');
 		let prevtag = document.createElement('a');
 		let nexttag = document.createElement('a');
-		
 		let prevtag2 = document.createElement('a');
 		let nexttag2 = document.createElement('a');
-		
 		let summary_tag = document.createElement('span');
-		
 		let filecount = document.getElementById('filecount');
 		summary_tag.appendChild(document.createTextNode('Page ' + (currentPage+1) + ' of ' + num_pages))
 		prevtag.setAttribute('class','paginator_prev');
@@ -93,12 +90,7 @@ let engine = {
 		filecount.innerHTML = '';
 		filecount.appendChild(document.createTextNode(recordCount + ' files'));
 		console.log(currentPage, pageSize,num_pages, recordCount);
-/*		if(currentPage < num_pages){
-			// make next link
-		}
-		if(currentPage > 0){
-			// make prev link
-		}*/
+
 		//https://gomakethings.com/listening-for-click-events-with-vanilla-javascript/
 		prevtag.addEventListener('click',function(){
 			engine.loadFiles((parseInt(currentPage) - 1),document.getElementById('searchfield').value, num_pages);
@@ -152,17 +144,25 @@ let engine = {
 			_linkelem.setAttribute('href','#');
 			_linkelem.setAttribute('title','Details for ' + filename);
 			_linkelem.addEventListener('click',function(){
+				/** first remove all highlight class from elements */
+				for (const elem of this.parentElement.parentElement.childNodes){
+					elem.classList.remove('active');
+				}
+				
 				engine.buildFileDetails(this.getAttribute('data-fileguid'));
+				this.parentElement.classList.add('active');
 			});
 			_linkelem.appendChild(document.createTextNode(filename));
 		}
-
-		
 		return(_linkelem);
 	},
 	
 	buildFileDetails : function(fileguid){
 		console.log('get details by this: ',fileguid);
+		/** hide all headings until we know which ones to show: */
+		document.getElementById('maps_heading').classList.add('hidden');
+		document.getElementById('screenshots_heading').classList.add('hidden');
+		document.getElementById('graphics_heading').classList.add('hidden');
 		fetch('/app/file/details/' + fileguid)
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
@@ -179,29 +179,29 @@ let engine = {
 			document.getElementById('detail_maps').innerHTML = '';
 			document.getElementById('detail_screenshots').innerHTML = '';
 			document.getElementById('detail_graphics').innerHTML = '';
-			
 			document.getElementById('detail_name').appendChild(document.createTextNode(json_data['record_filename']));
 			
 			let linkElem = engine.buildFileLink(json_data['record_identifier'],json_data['record_filename'],true);
 			document.getElementById('detail_name').appendChild(linkElem);
-//			document.getElementById('detail_download').appendChild(linkElem);
+
 			//https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
 			if(json_data['record_readme']){
 				document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
 			}
 			
-//			document.getElementById('detail_maps').appendChild(engine.buildImages(json_data['record_maps'],'MAPS'));
-//			document.getElementById('detail_screenshots').appendChild(engine.buildImages(json_data['record_screenshots'],'SCREENSHOTS'));
-//			document.getElementById('detail_graphics').appendChild(engine.buildImages(json_data['record_graphics'],'GRAPHICS'));
-			
-			if(json_data['record_maps']){
-				document.getElementById('detail_maps').classList.remove('hidden').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
+			console.log(json_data['record_maps'])
+			if(json_data['record_maps']['data']){
+				document.getElementById('maps_heading').classList.remove('hidden');
+				document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
 			}
-			
-			document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
-			document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
-			
-			//this.buildFileLink(fileData.page_data[counter]._id,fileData.page_data[counter]['filenames'][0])
+			if(json_data['record_screenshots']['data']){
+				document.getElementById('screenshots_heading').classList.remove('hidden');
+				document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
+			}
+			if(json_data['record_graphics']['data']){
+				document.getElementById('graphics_heading').classList.remove('hidden');
+				document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
+			}
 		});
 		/** get the heading block and pushin the filename (trimmed) */
 	},
@@ -210,12 +210,15 @@ let engine = {
 	buildImages : function(data){
 		console.log(data);
 		let _ul = document.createElement('ul');
-		for(a=0;a<data.data.length;a++){
-			let _li = document.createElement('li');
-			let _img = this.buildImage(data.data[a]);
-			_li.appendChild(_img);
-			_ul.appendChild(_li);
+		if(data.data && data.data.length){
+			for(a=0;a<data.data.length;a++){
+				let _li = document.createElement('li');
+				let _img = this.buildImage(data.data[a]);
+				_li.appendChild(_img);
+				_ul.appendChild(_li);
+			}
 		}
+		
 		return(_ul);
 	},
 	
@@ -225,42 +228,43 @@ let engine = {
 		/** pusg the current data to the working object: */
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
-		if(data.data && data.data.length>1){
+		if(data.data && data.data.length>0){
 			let _imgwrapper = document.createElement('div');
 			let _img = this.buildImage(data.data[0]);
 			_img.setAttribute('id','currentimage_' + set);
 			_imgwrapper.appendChild(_img);
-			_wrapper.appendChild(_imgwrapper)
+			
 			let _paginatorwrapper = document.createElement('div');
 			let _ul = document.createElement('ul');
 			
-			for(let a=0;a<data.data.length;a++){
-				let _li = document.createElement('li');
-				let _a = document.createElement('span');
-				_a.setAttribute('data-itemnum',a);
-				_a.setAttribute('data-set',set);
-				if(a===0){
-					_a.setAttribute('style','font-weight: bold;');
-				}
-				/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
-//				_a.setAttribute('href','#/');
-				_a.appendChild(document.createTextNode(a));
-				
-				_li.appendChild(_a);
-				_ul.appendChild(_li);
-				
-				_a.addEventListener('click',function(){
-					for (const elem of this.parentElement.parentElement.childNodes){
-						console.log(elem)
-						elem.firstChild.setAttribute('style','');
+			if(data.data.length > 1){
+				for(let a=0;a<data.data.length;a++){
+					let _li = document.createElement('li');
+					let _a = document.createElement('span');
+					_a.setAttribute('data-itemnum',a);
+					_a.setAttribute('data-set',set);
+					if(a===0){
+						_a.setAttribute('style','font-weight: bold;');
 					}
-					let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
-					img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
-					this.setAttribute('style','font-weight:bold;')
-				});
+					/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
+					_a.appendChild(document.createTextNode(a));
+					_li.appendChild(_a);
+					_ul.appendChild(_li);
+					
+					_a.addEventListener('click',function(){
+						for (const elem of this.parentElement.parentElement.childNodes){
+							console.log(elem)
+							elem.firstChild.setAttribute('style','');
+						}
+						let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
+						img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
+						this.setAttribute('style','font-weight:bold;')
+					});
+				}				
 			}
 			_paginatorwrapper.appendChild(_ul);
 			_wrapper.appendChild(_paginatorwrapper);
+			_wrapper.appendChild(_imgwrapper)
 		}
 		return(_wrapper);
 	},
@@ -270,18 +274,6 @@ let engine = {
 		_img.setAttribute('title',data['file']);
 		_img.setAttribute('src','data:image/png;base64,'+data['b64']);
 		return(_img);
-	},
-
-	buildPaginationLink : function(direction, currentPage, filecount){
-		let newpage = currentPage;
-		switch(direction){
-			case -1:	//back
-				newpage--;
-			break;
-			case 1:		//forward
-				newpage++;
-			break;
-		}
 	}
 }
 console.log('script loaded');
