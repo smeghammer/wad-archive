@@ -3,6 +3,8 @@ import os
 import base64
 from os import path
 import gzip
+import zipfile
+from zipfile import ZipFile, Path
 from libs.database import WadArchiveDatabase
 
 class Middleware():
@@ -33,15 +35,67 @@ class Middleware():
         }
         return details
     
+    #  un-gzip the archived file. Needed when returing a file directly form the zipped archiove:
+    def get_uncompressed_file(self,compressed_file):
+        return_file = compressed_file
+        # uncompress it first:
+        data = gzip.decompress(return_file.read())
+        # uncompressed_return_file = gzip.decompress(return_file.read())
+        outfile = io.BytesIO(data)
+        return outfile
+    
     def file(self,guid,type='wad'):
         ''' I can get teh type from the filenames extension '''
+        ''' Replace this loading from directory to loading from a zip archive,
+        so we don't need to unzip everything first '''
         print('in middleware.file, ',guid)
         file_name = self.db.getFilename(guid)
         # # open the folder conaining the archives
         file_dir = guid[0:2:1]
+
         file_name_prefix = guid[2:]
         # archives_path = path.join(self.path_to_archives,guid[0:2:1],guid[2:])
         archives_path = self.path(guid)
+        
+        ''' the zip archive is also the directory name, with a .zip extension 
+        with zipfile.ZipFile("sample.zip", mode="r") as archive:
+        OK this works, but I need to adapt the image/readme bits to do the same thing:
+        '''
+        try:
+            relative_path = self.relative_path(guid)
+            # Archive opens just fine
+            with ZipFile(''.join([path.join(self.path_to_archives,file_dir),'.zip']), mode='r') as archive:
+                # if the archive opened OK, proceed tgo determine the filepath to retrieve:
+                # open the zipped file (folder/folder/fname). need to test for .wad.gz and .pk3.gz
+                try_relative_pk3 = (path.join(relative_path,''.join([file_dir, file_name_prefix, '.pk3.gz']))).replace('\\','/')
+                try_relative_wad = path.join(relative_path,''.join([file_dir, file_name_prefix, '.wad.gz'])).replace('\\','/')              
+        
+                # THEY ARE BLOODY FORWARD SLASHES!!!!!!!!!!!!
+                # This does not work?
+                # contnts = archive.infolist() 
+                # test = zipfile.Path(archive,at=try_relative_wad)
+                # f=  test.read_bytes()
+                # print(f)
+                # https://stackoverflow.com/questions/15282651/how-do-i-read-text-files-within-a-zip-file
+                # I'll need to alsoopen the readmes and images...
+                # path_to_open = path.join(relative_path,''.join([file_dir, file_name_prefix, '.pk3.gz']))  
+                print(try_relative_pk3)
+                try:
+                    with archive.open( try_relative_pk3, mode='r'  ) as returnfile:
+                        print('extracting gzipped pk3...')
+                        return self.get_uncompressed_file(returnfile), file_name 
+                except:
+                    try:
+                        with archive.open( try_relative_wad, mode='r'    ) as returnfile:
+                            print('extracting gzipped wad...')
+                            return self.get_uncompressed_file(returnfile), file_name
+                    except Exception as ex:
+                        print('failed')
+
+        except FileNotFoundError as ex:
+            # throw error up stack here!!
+            print('warning: ', str(ex))
+
         # open the zipped file (folder/folder/fname). need to test for .wad.gz and .pk3.gz
         try_pk3 = path.join(archives_path, ''.join([file_dir, file_name_prefix, '.pk3.gz']))
         try_wad =  path.join(archives_path, ''.join([file_dir, file_name_prefix, '.wad.gz']))
@@ -69,6 +123,7 @@ class Middleware():
                         return outfile, file_name
             except FileNotFoundError as err:
                 print(err," giving up..")
+                # return an error up the stack here!
 
         return None, None
     
@@ -106,4 +161,12 @@ class Middleware():
         file_name_prefix = guid[2:]
         archives_path = path.join(self.path_to_archives,guid[0:2:1],guid[2:])
         return archives_path
+    
+    def relative_path(self,guid):
+        print('build relative path for zip archive contents file retrieval')
+        file_name = self.db.getFilename(guid)
+        file_dir = guid[0:2:1]
+        file_name_prefix = guid[2:]
+        zip_archives_path = path.join(guid[0:2:1],guid[2:])
+        return zip_archives_path
     
