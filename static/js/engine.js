@@ -3,7 +3,6 @@ let engine = {
 	currentdata : [],
 	fileCount : -1,
 	init : function(){
-		console.log('in init');
 		/* which page are we loading? */
 		let startup = document.getElementById('body').getAttribute('data-init-action');
 		switch(startup){
@@ -35,16 +34,13 @@ let engine = {
 		if(pageNum && pageNum>0){
 			pNum = pageNum;
 		}
-		else{
-			console.log('neg pagenum! ',pageNum)
-		}
 		
 		if(pageNum >= num_pages){
 			pNum = num_pages-1;
 		}
 		/** look for pagination flags */;
 		let pageSize = document.getElementById('body').getAttribute('data-page-size');
-		console.log(pageSize);
+
 		fetch('/app/files/'+pageSize + '/' + pNum + f)
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
@@ -134,6 +130,9 @@ let engine = {
 		let _linkelem = document.createElement('a');
 		_linkelem.setAttribute('data-fileguid',fileguid);
 		if(isDownloadLink){
+			/** we also want a link back to the homepage becauss, well, because. */
+			let homelink = document.createElement('a');
+			homelink.setAttribute('href','/');
 			let _img = document.createElement('img');
 			_img.setAttribute('src','/static/images/dl-anim.gif');
 			_linkelem.setAttribute('href','/app/file/' + fileguid);
@@ -150,7 +149,15 @@ let engine = {
 				}
 				
 				engine.buildFileDetails(this.getAttribute('data-fileguid'));
+				let spinner = document.getElementById('spinner');
+				const classes = spinner.classList
+				classes.add('fish','fingers','hideme');
+				classes.remove('hidden','fingers','hideme');
 				this.parentElement.classList.add('active');
+				
+				/** and hide the boss... */
+				document.getElementById('no_selection').classList.add('hidden');
+				document.getElementById('is_selection').classList.remove('hidden');
 			});
 			_linkelem.appendChild(document.createTextNode(filename));
 		}
@@ -158,7 +165,6 @@ let engine = {
 	},
 	
 	buildFileDetails : function(fileguid){
-		console.log('get details by this: ',fileguid);
 		/** hide all headings until we know which ones to show: */
 		document.getElementById('maps_heading').classList.add('hidden');
 		document.getElementById('screenshots_heading').classList.add('hidden');
@@ -167,12 +173,11 @@ let engine = {
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
 			data = response.json();
-			console.log(data)
 			return(data);
 		})
 		.then(function(json_data){
-			console.log(json_data);
 			/** empty the containers */
+			document.getElementById('spinner').classList.add('hidden');
 			document.getElementById('detail_name').innerHTML = '';
 			document.getElementById('detail_readme').innerHTML = '';
 			document.getElementById('detail_download').innerHTML = '';
@@ -189,26 +194,23 @@ let engine = {
 				document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
 			}
 			
-			console.log(json_data['record_maps'])
-			if(json_data['record_maps']['data']){
+			if(json_data['record_maps']['data'].length){
 				document.getElementById('maps_heading').classList.remove('hidden');
 				document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
 			}
-			if(json_data['record_screenshots']['data']){
+			if(json_data['record_screenshots']['data'].length){
 				document.getElementById('screenshots_heading').classList.remove('hidden');
 				document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
 			}
-			if(json_data['record_graphics']['data']){
+			if(json_data['record_graphics']['data'].length){
 				document.getElementById('graphics_heading').classList.remove('hidden');
 				document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
 			}
 		});
-		/** get the heading block and pushin the filename (trimmed) */
 	},
 	
 	/**  */
 	buildImages : function(data){
-		console.log(data);
 		let _ul = document.createElement('ul');
 		if(data.data && data.data.length){
 			for(a=0;a<data.data.length;a++){
@@ -218,7 +220,6 @@ let engine = {
 				_ul.appendChild(_li);
 			}
 		}
-		
 		return(_ul);
 	},
 	
@@ -253,7 +254,6 @@ let engine = {
 					
 					_a.addEventListener('click',function(){
 						for (const elem of this.parentElement.parentElement.childNodes){
-							console.log(elem)
 							elem.firstChild.setAttribute('style','');
 						}
 						let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
@@ -276,5 +276,4 @@ let engine = {
 		return(_img);
 	}
 }
-console.log('script loaded');
 engine.init();

@@ -11,9 +11,9 @@
 }*/
 @font-face {
     font-family: "AmazDooMLeftOutline";
-    src: url("/fonts/AmazDooMLeftOutline.woff2") format('woff2'),
-        url("/fonts/AmazDooMLeftOutline.woff") format('woff'),
-        url("/fonts/AmazDooMLeftOutline.ttf") format('truetype'),
+     src: /* url("/fonts/AmazDooMLeftOutline.woff2") format('woff2'), */
+/*         url("/fonts/AmazDooMLeftOutline.woff") format('woff'), */
+/*         url("/fonts/AmazDooMLeftOutline.ttf") format('truetype'), */
         url("/fonts/AmazDooMLeftOutline.svg") format('svg');
 }
 @font-face {
@@ -112,6 +112,24 @@ div.content{
 /*     height: 100%; */
 }
 
+#no_selection{
+	text-align: center;
+}
+
+#no_selection > img{
+	width: 500px;
+    padding-top: 50px;
+/*     padding-bottom: 50px; */
+}
+
+#spinner  {
+	text-align: center;
+}  
+
+#is_selection h2{
+    text-align: center;
+    text-decoration: underline;
+}
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/white-space */
 div#detail_readme{
 	font-family: courier, monospace;
@@ -127,7 +145,7 @@ div#detail_readme{
     padding-left: 5px;
 }
 
-.hidden{
+.hidden, .hideme{
 	display: none;
 }
 
