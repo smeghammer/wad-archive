@@ -85,24 +85,27 @@ class Middleware():
         _out['data'] = []
         file_dir = guid[0:2:1]
         record = guid[2:]
-
-        with ZipFile(''.join([path.join(self.path_to_archives,file_dir),'.zip']), mode='r') as archive:
-            image_key_prefix = file_dir + '/' + record + '/' + dir + '/'
-            contents = archive.infolist()
-            namelist = archive.namelist()
-            recordlist = []
-            for entry in namelist:
-                # append to working list if archive path key matches a file
-                if image_key_prefix in entry and len(entry) > len(image_key_prefix):
-                    recordlist.append(archive.getinfo(entry))
-
-            for record in recordlist:
-                with archive.open( record, mode='r'  ) as returnfile:
-                    if returnfile:
-                        _img = returnfile.read()
-                        _b64 = base64.b64encode(_img)
-                        _decoded = _b64.decode('ascii')
-                        _out['data'].append({'file':record.filename.split('/')[-1], 'b64': _decoded  }  )
+        
+        try:
+            with ZipFile(''.join([path.join(self.path_to_archives,file_dir),'.zip']), mode='r') as archive:
+                image_key_prefix = file_dir + '/' + record + '/' + dir + '/'
+                contents = archive.infolist()
+                namelist = archive.namelist()
+                recordlist = []
+                for entry in namelist:
+                    # append to working list if archive path key matches a file
+                    if image_key_prefix in entry and len(entry) > len(image_key_prefix):
+                        recordlist.append(archive.getinfo(entry))
+    
+                for record in recordlist:
+                    with archive.open( record, mode='r'  ) as returnfile:
+                        if returnfile:
+                            _img = returnfile.read()
+                            _b64 = base64.b64encode(_img)
+                            _decoded = _b64.decode('ascii')
+                            _out['data'].append({'file':record.filename.split('/')[-1], 'b64': _decoded  }  )
+        except FileNotFoundException as ex:
+            _out['data'] = "error" 
         return _out
             # now list contents at this location:
 

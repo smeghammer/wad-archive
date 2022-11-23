@@ -46,7 +46,9 @@ div.paddedredborder{
 	margin: 5px;
 /* 	padding: 5px; */
 }
-
+#searchfield{
+	color: black
+}
 #searchbtn{
 	color: red;
 }
@@ -97,6 +99,19 @@ h2{
 
 #searchbox, #filelist, #filecount, #paginator{
 	width: 30%;
+}
+#paginator div{
+	text-align: center;
+	font-weight: bold;
+}
+#paginator > div > a{
+	color: darkred;
+}
+#paginator > div > span{
+	font-weight: normal;
+}
+#paginator div > a:hover{
+	text-decoration: underline;
 }
 
 a.paginator_prev:hover,a.paginator_next:hover{
