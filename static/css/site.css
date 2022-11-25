@@ -105,7 +105,7 @@ h2{
 	font-weight: bold;
 }
 #paginator > div > a{
-	color: darkred;
+	color: red;
 }
 #paginator > div > span{
 	font-weight: normal;
@@ -145,6 +145,10 @@ div.content{
     text-align: center;
     text-decoration: underline;
 }
+#is_selection h2:not(#detail_name){
+	border-top: 1px solid red;
+}
+
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/white-space */
 div#detail_readme{
 	font-family: courier, monospace;
@@ -170,6 +174,7 @@ div.detail > div > div > img{
 
 div.detail > div > div > ul{
 	padding-left: 0px;
+	text-align: center;
 }
 
 div.detail > div > div > ul > li{

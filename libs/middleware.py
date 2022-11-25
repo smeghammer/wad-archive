@@ -104,7 +104,9 @@ class Middleware():
                             _b64 = base64.b64encode(_img)
                             _decoded = _b64.decode('ascii')
                             _out['data'].append({'file':record.filename.split('/')[-1], 'b64': _decoded  }  )
-        except FileNotFoundException as ex:
+        except FileNotFoundError as ex:
+            _out['data'] = "error" 
+        except Exception as ex:
             _out['data'] = "error" 
         return _out
             # now list contents at this location:

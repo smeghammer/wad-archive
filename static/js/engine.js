@@ -13,10 +13,25 @@ let engine = {
 			btn.addEventListener('click',function(){
 				engine.loadFiles(0,document.getElementById('searchfield').value);
 			});	
+
 			this.loadFiles();
+			this.bindKeyToElem(13,'searchfield','searchbtn');
 			break;
 			default:
 		}
+	},
+	
+	/**
+	https://stackoverflow.com/questions/6542413/bind-enter-key-to-specific-button-on-page
+	https://stackoverflow.com/questions/24552447/bind-onclick-to-enter-key
+	event.which/keycode is deprecated, so I'll need tor eplace eventually.'
+	 */
+	bindKeyToElem : function(keyId, elemId,targetId){
+		document.getElementById(elemId).onkeyup = function(event){
+			if(event.which === keyId){
+				document.getElementById(targetId).click();
+			}
+		};
 	},
 	
 	/**
@@ -194,17 +209,23 @@ let engine = {
 				document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
 			}
 			
-			if(json_data['record_maps']['data'].length){
-				document.getElementById('maps_heading').classList.remove('hidden');
-				document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
-			}
-			if(json_data['record_screenshots']['data'].length){
-				document.getElementById('screenshots_heading').classList.remove('hidden');
-				document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
-			}
-			if(json_data['record_graphics']['data'].length){
-				document.getElementById('graphics_heading').classList.remove('hidden');
-				document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
+			let imageContainers = [  
+				['record_maps','maps_heading','detail_maps','MAPS'],  
+				['record_screenshots','screenshots_heading','detail_screenshots','SCREENSHOTS'],  
+				['record_graphics','graphics_heading','detail_graphics','GRAPHICS']
+			];
+
+			for(let a=0;a<imageContainers.length;a++){
+				if(json_data[imageContainers[a][0] ]['data'].length){
+					console.log(json_data[imageContainers[a][0] ]['data'].length)
+					document.getElementById(imageContainers[a][1]).classList.remove('hidden');
+					if(json_data['record_maps']['data'] !== 'error'){
+						document.getElementById(imageContainers[a][2]).appendChild(engine.buildImagePaginator(json_data[imageContainers[a][0]],imageContainers[a][3]));
+					}
+					else{
+						document.getElementById(imageContainers[a][2]).appendChild(document.createTextNode('path not found! Check config.'));
+					}
+				}
 			}
 		});
 	},
@@ -226,45 +247,50 @@ let engine = {
 	/** rather than build all image up front, build ONE image and a paginator */
 	buildImagePaginator : function(data,set){
 		console.log(data);
-		/** pusg the current data to the working object: */
+		/** push the current data to the working object: */
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
-		if(data.data && data.data.length>0){
-			let _imgwrapper = document.createElement('div');
-			let _img = this.buildImage(data.data[0]);
-			_img.setAttribute('id','currentimage_' + set);
-			_imgwrapper.appendChild(_img);
+		if(data['data'] === 'error'){
 			
-			let _paginatorwrapper = document.createElement('div');
-			let _ul = document.createElement('ul');
-			
-			if(data.data.length > 1){
-				for(let a=0;a<data.data.length;a++){
-					let _li = document.createElement('li');
-					let _a = document.createElement('span');
-					_a.setAttribute('data-itemnum',a);
-					_a.setAttribute('data-set',set);
-					if(a===0){
-						_a.setAttribute('style','font-weight: bold;');
-					}
-					/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
-					_a.appendChild(document.createTextNode(a));
-					_li.appendChild(_a);
-					_ul.appendChild(_li);
-					
-					_a.addEventListener('click',function(){
-						for (const elem of this.parentElement.parentElement.childNodes){
-							elem.firstChild.setAttribute('style','');
+		}
+		else{
+			if(data.data && data.data.length>0){
+				let _imgwrapper = document.createElement('div');
+				let _img = this.buildImage(data.data[0]);
+				_img.setAttribute('id','currentimage_' + set);
+				_imgwrapper.appendChild(_img);
+				
+				let _paginatorwrapper = document.createElement('div');
+				let _ul = document.createElement('ul');
+				
+				if(data.data.length > 1){
+					for(let a=0;a<data.data.length;a++){
+						let _li = document.createElement('li');
+						let _a = document.createElement('span');
+						_a.setAttribute('data-itemnum',a);
+						_a.setAttribute('data-set',set);
+						if(a===0){
+							_a.setAttribute('style','font-weight: bold;');
 						}
-						let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
-						img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
-						this.setAttribute('style','font-weight:bold;')
-					});
-				}				
+						/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
+						_a.appendChild(document.createTextNode(a));
+						_li.appendChild(_a);
+						_ul.appendChild(_li);
+						
+						_a.addEventListener('click',function(){
+							for (const elem of this.parentElement.parentElement.childNodes){
+								elem.firstChild.setAttribute('style','');
+							}
+							let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
+							img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
+							this.setAttribute('style','font-weight:bold;')
+						});
+					}				
+				}
+				_paginatorwrapper.appendChild(_ul);
+				_wrapper.appendChild(_paginatorwrapper);
+				_wrapper.appendChild(_imgwrapper)
 			}
-			_paginatorwrapper.appendChild(_ul);
-			_wrapper.appendChild(_paginatorwrapper);
-			_wrapper.appendChild(_imgwrapper)
 		}
 		return(_wrapper);
 	},
