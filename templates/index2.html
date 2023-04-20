@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{{title}}</title>
+<!--         <link href="/static/css/site.css" rel="stylesheet" type="text/css"/> -->
+		<link href="/static/css/styles.css" rel="stylesheet" type="text/css"/>
+        <link rel="shortcut icon" type="image/gif" href="/static/images/favicon.gif">
+	</head>
+	<body id="body" data-init-action="list-files" data-page-size="30" data-page-start="0">
+		<div>
+		<h1>{{title}}</h1>
+		</div>
+		<div id="searchbox">
+		<input type="text" name="searchbox" id="searchfield" />
+		<input id="searchbtn" type="button" name="Filter" value="Filter" title="Filter file names by this value"/>
+		</div>
+		<div id="filelist">
+		
+		</div>
+		<div id="filecount">
+		
+		</div>
+		<div id="paginator">
+		
+		</div>
+		<div class="content paddedredborder">
+			<div id="spinner" class="hidden"><img src="/static/images/spinner.gif" /></div>
+			<div id="no_selection">
+				<img src="/static/images/BOSSB1.png" alt="Who's the boss?" title="Who's the boss?" />
+			</div>
+			
+			<div id="is_selection" class="hidden">
+				
+				<h2 id='detail_name'><span id="detail_name"></span></h2>
+				<div id='detail_download'></div>
+				<div class="detail" id='detail_readme'></div>
+				<h2 id='maps_heading' class='hidden'>Maps</h2>
+				<div class="detail" id=detail_maps></div>
+				<h2 id='screenshots_heading' class='hidden'>Screenshots</h2>
+				<div class="detail" id=detail_screenshots></div>
+				<h2 id='graphics_heading' class='hidden'>Graphics</h2>
+				<div class="detail" id=detail_graphics></div>
+			</div>
+		</div>
+		<script src="/static/js/engine.js" type="text/javascript"></script>
+	</body>
+</html>

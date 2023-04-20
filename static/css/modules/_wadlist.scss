@@ -1,0 +1,37 @@
+/* note the underscore prefix. This is required:
+https://stackoverflow.com/questions/34889962/why-put-in-front-of-the-file-name-or-in-scss-css
+ 
+ The @mixin is key here!
+ 
+ also: https://www.freecodecamp.org/news/how-to-pass-arguments-to-mixins/
+ */
+
+@mixin filelist ($black,$white,$highlight){
+	width: 30%;
+	ul{
+		>li{
+			color: $black;
+			// color: black;
+			list-style-type: none;
+			>a{
+				// color: $white;
+				color: white;
+				text-decoration: none;
+				&:hover{
+					text-decoration: underline;
+				}
+			}
+			&.active{
+				// color: $highlight;
+				color: #c00000;
+				list-style-type: disclosure-closed;
+			}
+			// see https://stackoverflow.com/questions/10750563/after-and-before-pseudo-element-selectors-in-sass
+			&:hover{
+				// color: $highlight;
+				color: #c00000;
+				list-style-type: disclosure-closed;
+			}			
+		}
+	}
+}

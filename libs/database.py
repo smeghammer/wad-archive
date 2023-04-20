@@ -10,6 +10,7 @@ class WadArchiveDatabase():
         return self.db['filenames'].count_documents(filter)
     
     def getPagedFilenames(self, page_size,page_num, filter):
+        ''' paged '''
         filter = filter
         pagination_data = {
             'item_count' : self.getFilecount(filter),

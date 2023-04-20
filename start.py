@@ -14,6 +14,12 @@ def index():
     # endpoint for returning rendered template homepage
     return render_template('index.html', title='WAD Archive Wrapper')
 
+@app.route('/index2')
+def index2():
+    # endpoint for returning rendered template homepage
+    return render_template('index2.html', title='WAD Archive Wrapper')
+
+
 @app.route('/app')
 def approot():
     return "Application API root"

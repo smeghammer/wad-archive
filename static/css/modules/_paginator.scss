@@ -1,0 +1,17 @@
+#paginator{ 
+	width: 30%;
+	>div{
+		text-align: center;
+		font-weight: bold;
+		>a{
+			color: red;
+			&:hover{
+				text-decoration: underline;
+				cursor: pointer;
+			}
+		}
+		>span{
+			font-weight: normal;
+		}
+	}
+}
