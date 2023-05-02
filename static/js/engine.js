@@ -247,7 +247,6 @@ let engine = {
 	
 	/** rather than build all image up front, build ONE image and a paginator */
 	buildImagePaginator : function(data,set){
-		console.log(data);
 		/** push the current data to the working object: */
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
@@ -258,7 +257,7 @@ let engine = {
 			if(data.data && data.data.length>0){
 				let _imgwrapper = document.createElement('div');
 				
-				let _mapname = this.buildMapName(data.data[0])
+				let _mapname = this.buildMapName(data.data[0],set)
 				console.log(_mapname);
 				if(_mapname){
 					_imgwrapper.appendChild(_mapname);
@@ -268,9 +267,7 @@ let engine = {
 				_img.setAttribute('id','currentimage_' + set);
 				_imgwrapper.appendChild(_img);
 				//need to iterate over this
-				
-				
-				
+
 				let _paginatorwrapper = document.createElement('div');
 				let _ul = document.createElement('ul');
 				
@@ -308,18 +305,19 @@ let engine = {
 							this.setAttribute('style','font-weight:bold;');
 							
 							// and this needs to reset the map name, if present()
-							console.log(engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
+							console.log(set, engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
 							
 							// need to account for non-existent data
-							let map_nicename = document.querySelectorAll('[data-id="map-nicename"]');
-							console.log(map_nicename);
-							for(let elem of map_nicename){
-								console.log(elem);
-								elem.innerHTML = '';
-								elem.appendChild(document.createTextNode( engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename ))
+							if(set === 'MAPS'){
+								let map_nicename = document.querySelectorAll('[data-id="map-nicename"]');
+								console.log(map_nicename);
+								for(let elem of map_nicename){
+									console.log(elem);
+									elem.innerHTML = '';
+									elem.appendChild(document.createTextNode( engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename ))
+								}
+								// map_nicename.innerHTML = engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename;
 							}
-							// map_nicename.innerHTML = engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename;
-							
 						});
 					}				
 				}
@@ -340,9 +338,9 @@ let engine = {
 		return(_img);
 	},
 	
-	buildMapName : function(data){
-		console.log(data);
-		if(data['nicename']){
+	buildMapName : function(data,set){
+		console.log(data,set);
+		if(data['nicename'] && set === 'MAPS'){
 			let _mapname = document.createElement('h4');
 			_mapname.setAttribute('data-id','map-nicename');
 			_mapname.appendChild(document.createTextNode(data['nicename']));
