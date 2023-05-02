@@ -96,20 +96,30 @@ class Middleware():
                     # append to working list if archive path key matches a file
                     if image_key_prefix in entry and len(entry) > len(image_key_prefix):
                         recordlist.append(archive.getinfo(entry))
-    
+                
+                _index = 0
                 for record in recordlist:
+                    
                     with archive.open( record, mode='r'  ) as returnfile:
                         if returnfile:
                             _img = returnfile.read()
                             _b64 = base64.b64encode(_img)
                             _decoded = _b64.decode('ascii')
-                            _out['data'].append({'file':record.filename.split('/')[-1], 'b64': _decoded  }  )
+                            _nicename = self.mapdetail(guid,_index,'NICENAME')
+                            _out['data'].append({'file':record.filename.split('/')[-1], 'b64': _decoded, 'nicename':_nicename  }  )
+                    _index += 1
         except FileNotFoundError as ex:
             _out['data'] = "error" 
         except Exception as ex:
             _out['data'] = "error" 
         return _out
             # now list contents at this location:
+
+    # https://stackoverflow.com/questions/17303833/mongodb-nested-array-query
+    def mapdetail(self, guid, index, type):
+        if type == 'NICENAME':
+           return self.db.getNicename(guid, index) 
+        pass
 
     def readme(self,guid):
         return self.db.readme(guid)

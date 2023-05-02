@@ -34,3 +34,14 @@ class WadArchiveDatabase():
                 return res['readmes'][0]
         except Exception as ex:
             return None
+    
+    # retrieve the nide mapname, if present, for given map index
+    def getNicename(self,uuid,level):
+        try:
+            result = dict(self.db['wads'].find_one({'_id':uuid}))
+            # now we need to extract the branch of this document:
+            print(result)
+            _out = result['maps'][int(level)]['nicenames'][0]['levelname']
+            return _out
+        except:
+            return None

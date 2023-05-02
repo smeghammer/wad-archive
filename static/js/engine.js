@@ -232,6 +232,7 @@ let engine = {
 	
 	/**  */
 	buildImages : function(data){
+		console.log(data);
 		let _ul = document.createElement('ul');
 		if(data.data && data.data.length){
 			for(a=0;a<data.data.length;a++){
@@ -251,14 +252,24 @@ let engine = {
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
 		if(data['data'] === 'error'){
-			
+			console.log('error')
 		}
 		else{
 			if(data.data && data.data.length>0){
 				let _imgwrapper = document.createElement('div');
+				
+				let _mapname = this.buildMapName(data.data[0])
+				console.log(_mapname);
+				if(_mapname){
+					_imgwrapper.appendChild(_mapname);
+				}
+				
 				let _img = this.buildImage(data.data[0]);
 				_img.setAttribute('id','currentimage_' + set);
 				_imgwrapper.appendChild(_img);
+				//need to iterate over this
+				
+				
 				
 				let _paginatorwrapper = document.createElement('div');
 				let _ul = document.createElement('ul');
@@ -273,22 +284,48 @@ let engine = {
 							_a.setAttribute('style','font-weight: bold;');
 						}
 						/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
+						/* append map name, if not null */
+						//console.log(data.data[a].nicename);
+						// this may never be true:
+						//let linktext = a;
+						//if(data.data[a].nicename){
+						//	linktext = data.data[a].nicename;
+						//}
+						
 						_a.appendChild(document.createTextNode(a));
+						// _a.appendChild(document.createTextNode(linktext));
 						_li.appendChild(_a);
 						_ul.appendChild(_li);
 						
 						_a.addEventListener('click',function(){
+							// cgi2-alpha12.wad
+							console.log('clicking map index link');
 							for (const elem of this.parentElement.parentElement.childNodes){
 								elem.firstChild.setAttribute('style','');
 							}
 							let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
 							img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
-							this.setAttribute('style','font-weight:bold;')
+							this.setAttribute('style','font-weight:bold;');
+							
+							// and this needs to reset the map name, if present()
+							console.log(engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
+							
+							// need to account for non-existent data
+							let map_nicename = document.querySelectorAll('[data-id="map-nicename"]');
+							console.log(map_nicename);
+							for(let elem of map_nicename){
+								console.log(elem);
+								elem.innerHTML = '';
+								elem.appendChild(document.createTextNode( engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename ))
+							}
+							// map_nicename.innerHTML = engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename;
+							
 						});
 					}				
 				}
 				_paginatorwrapper.appendChild(_ul);
 				_wrapper.appendChild(_paginatorwrapper);
+				console.log(_paginatorwrapper);
 				_wrapper.appendChild(_imgwrapper)
 			}
 		}
@@ -296,10 +333,24 @@ let engine = {
 	},
 
 	buildImage : function(data){
+		console.log(data)
 		let _img = document.createElement('img');
 		_img.setAttribute('title',data['file']);
 		_img.setAttribute('src','data:image/png;base64,'+data['b64']);
 		return(_img);
+	},
+	
+	buildMapName : function(data){
+		console.log(data);
+		if(data['nicename']){
+			let _mapname = document.createElement('h4');
+			_mapname.setAttribute('data-id','map-nicename');
+			_mapname.appendChild(document.createTextNode(data['nicename']));
+			return(_mapname);
+		}
+		else{
+			return(null);
+		}
 	}
 }
 engine.init();

@@ -68,6 +68,10 @@ def maps(guid):
     # returns a list of b64 encoded images
     return mware.b64imagelist(guid,'MAPS')
 
+@app.route('/app/file/map/<guid>/<index>')
+def mapname(guid, index):
+    return mware.mapdetail(guid,index,'NICENAME')
+
 @app.route('/app/file/graphics/<guid>')
 def graphics(guid):
     # returns a list of b64 encoded images
