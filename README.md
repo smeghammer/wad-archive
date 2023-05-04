@@ -1,18 +1,14 @@
 # wad-archive
 Python wrapper for WAD Archive internet archive dump
 
-see 
+## branch 'zipped archives'
+Contains code for accessing data from the double-zipped large archive files. I don't really want to maintain code that both handles the unzipped and the zipped archive. I will branch off from master again to have a clean branch that contains code that handles the UNZIPPED large archive
 
-https://www.doomworld.com/forum/topic/130650-closing-wad-archive/
-
-and
-
-https://www.doomworld.com/forum/topic/132262-rc2-python-wrapper-for-wad-archive-data-dump-fully-works-with-compressed-archive/
-
-for background of this.
+## Summary
+A read-only wrapper for the WAD Archive data dump from 2022. Details of this can be found in [this Doomworld thread](https://www.doomworld.com/forum/topic/130650-closing-wad-archive/).
 
 TODO: 
- - convert list to navigation, that opens a page displaying map, screenshots and a download link, and readme/IDGames readme if found. - DONE
- - in LH list, highlight the selected entry - DONE
+ - convert list to navigation, that opens apage displaying map, screenshots and a download link, and readme/IDGames readme if found.
+ - in LH list, highlight the selected entry
  - catch and alert if archive is not found
- - TEST UNC path!! - works well :-)
+ - TEST UNC path!!

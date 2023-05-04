@@ -351,5 +351,4 @@ let engine = {
 		}
 	}
 }
-console.log('script loaded');
 engine.init();

@@ -1,0 +1,202 @@
+/* global styles */
+@font-face {
+  font-family: "AmazDooMLeft";
+  src: url("/fonts/AmazDooMLeft.woff2") format("woff2"), url("/fonts/AmazDooMLeft.woff") format("woff"), url("/fonts/AmazDooMLeft.ttf") format("truetype"), url("/fonts/AmazDooMLeft.svg") format("svg");
+}
+@font-face {
+  font-family: "AmazDooMLeftOutline";
+  src: url("/fonts/AmazDooMLeftOutline.svg") format("svg");
+}
+@font-face {
+  font-family: "AmazDooMRight";
+  src: url("/fonts/AmazDooMRight.woff") format("woff");
+}
+@font-face {
+  font-family: "AmazDooMRight2";
+  src: url("/fonts/AmazDooMRight2.woff") format("woff");
+}
+@font-face {
+  font-family: "AmazDooMRightOutline";
+  src: url("/fonts/AmazDooMRightOutline.woff") format("woff");
+}
+@font-face {
+  font-family: "DooM";
+  src: url("/fonts/DooM.woff") format("woff");
+}
+/* note the underscore prefix. This is required:
+https://stackoverflow.com/questions/34889962/why-put-in-front-of-the-file-name-or-in-scss-css
+
+ The @mixin is key here!
+
+ also: https://www.freecodecamp.org/news/how-to-pass-arguments-to-mixins/
+ */
+#paginator {
+  width: 30%;
+}
+#paginator > div {
+  text-align: center;
+  font-weight: bold;
+}
+#paginator > div > a {
+  color: red;
+}
+#paginator > div > a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+#paginator > div > span {
+  font-weight: normal;
+}
+
+/* define some things: */
+/* I also want to separate the list and the panel CSS's as @add (whcih is 
+superseding the @import) 
+ - https://sass-lang.com/documentation/at-rules/use
+ note: @use may not be globally supported yet? - https://stackoverflow.com/questions/58474760/sass-use-not-loading-partial
+ - also, the imported module MUST be prefixed with underscore.
+ - and, we can use 'wadlist' because SASS looks for import name based on partial filename
+*/
+* {
+  font-family: arial, sans-serif;
+  color: white;
+}
+
+/* note multilevel nesting here:
+ - update: use the @add appropriately to include a module:
+ - This will be to separate the main display panel from the LH navigation module,
+   and probably the footer too
+ */
+body {
+  background-color: #000000;
+  background-image: linear-gradient(to left, #57120d, #000000, #000000, #000000, #000000, #000000, #000000, #000000, #57120d);
+}
+body h1 {
+  color: #c00000;
+  font-family: AmazDooMLeftOutline;
+  letter-spacing: 0.2em;
+  margin-top: 30px;
+  margin-bottom: -10px;
+  text-align: center;
+  font-size: 6em;
+}
+body div {
+  /* do an @include here: */
+}
+body div.paddedredborder { /* the ampersand literally abuts the text on compilation. So NOT doing so will separate the directives correctly. We DO want this with a nested class attr */
+  border: 1px solid #ff0000;
+  margin: 5px;
+}
+body div.content {
+  width: 70%;
+  float: right;
+  top: 151px;
+  position: absolute;
+  right: 0px;
+}
+body div.content h2 {
+  color: #c00000;
+  text-align: center;
+  text-decoration: underline;
+  text-transform: uppercase;
+}
+
+#filelist {
+  /* and pass in the globally declared vars HERE (they coul dbe absolute values too) */
+  width: 30%;
+}
+#filelist ul > li {
+  color: #000000;
+  list-style-type: none;
+}
+#filelist ul > li > a {
+  color: white;
+  text-decoration: none;
+}
+#filelist ul > li > a:hover {
+  text-decoration: underline;
+}
+#filelist ul > li.active {
+  color: #c00000;
+  list-style-type: disclosure-closed;
+}
+#filelist ul > li:hover {
+  color: #c00000;
+  list-style-type: disclosure-closed;
+}
+
+#searchfield {
+  color: #000000;
+}
+
+#searchbtn {
+  color: #ff0000;
+}
+
+#searchbox, #filecount {
+  width: 30%;
+}
+
+#no_selection {
+  text-align: center;
+}
+
+#no_selection > img {
+  width: 500px;
+  padding-top: 50px;
+}
+
+#spinner {
+  text-align: center;
+}
+
+#is_selection h2 {
+  text-align: center;
+  text-decoration: underline;
+}
+
+#is_selection h2:not(#detail_name) {
+  border-top: 1px solid red;
+}
+
+div#detail_readme {
+  font-family: courier, monospace;
+  font-size: 0.9em;
+  white-space: pre;
+  padding: 5px;
+}
+
+#detail_name img {
+  width: 25px;
+  position: relative;
+  top: 3px;
+  padding-left: 5px;
+}
+
+.hidden, .hideme {
+  display: none;
+}
+
+div.detail > div > div > img {
+  width: 100%;
+}
+
+div.detail > div > div > ul {
+  padding-left: 0px;
+  text-align: center;
+}
+
+div.detail > div > div > ul > li {
+  display: inline-block;
+  padding-left: 20px;
+}
+
+div.detail > div > div > ul > li:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+div.detail > ul > li > img {
+  width: 100%;
+}
+
+/*# sourceMappingURL=styles.css.map */
