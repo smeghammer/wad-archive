@@ -11,9 +11,9 @@
 }*/
 @font-face {
     font-family: "AmazDooMLeftOutline";
-    src: url("/fonts/AmazDooMLeftOutline.woff2") format('woff2'),
-        url("/fonts/AmazDooMLeftOutline.woff") format('woff'),
-        url("/fonts/AmazDooMLeftOutline.ttf") format('truetype'),
+     src: /* url("/fonts/AmazDooMLeftOutline.woff2") format('woff2'), */
+/*         url("/fonts/AmazDooMLeftOutline.woff") format('woff'), */
+/*         url("/fonts/AmazDooMLeftOutline.ttf") format('truetype'), */
         url("/fonts/AmazDooMLeftOutline.svg") format('svg');
 }
 @font-face {
@@ -46,7 +46,9 @@ div.paddedredborder{
 	margin: 5px;
 /* 	padding: 5px; */
 }
-
+#searchfield{
+	color: black
+}
 #searchbtn{
 	color: red;
 }
@@ -98,6 +100,19 @@ h2{
 #searchbox, #filelist, #filecount, #paginator{
 	width: 30%;
 }
+#paginator div{
+	text-align: center;
+	font-weight: bold;
+}
+#paginator > div > a{
+	color: red;
+}
+#paginator > div > span{
+	font-weight: normal;
+}
+#paginator div > a:hover{
+	text-decoration: underline;
+}
 
 a.paginator_prev:hover,a.paginator_next:hover{
 	cursor: pointer;
@@ -110,6 +125,28 @@ div.content{
     position: absolute;
     right: 0px;
 /*     height: 100%; */
+}
+
+#no_selection{
+	text-align: center;
+}
+
+#no_selection > img{
+	width: 500px;
+    padding-top: 50px;
+/*     padding-bottom: 50px; */
+}
+
+#spinner  {
+	text-align: center;
+}  
+
+#is_selection h2{
+    text-align: center;
+    text-decoration: underline;
+}
+#is_selection h2:not(#detail_name){
+	border-top: 1px solid red;
 }
 
 /* https://developer.mozilla.org/en-US/docs/Web/CSS/white-space */
@@ -127,7 +164,7 @@ div#detail_readme{
     padding-left: 5px;
 }
 
-.hidden{
+.hidden, .hideme{
 	display: none;
 }
 
@@ -137,6 +174,7 @@ div.detail > div > div > img{
 
 div.detail > div > div > ul{
 	padding-left: 0px;
+	text-align: center;
 }
 
 div.detail > div > div > ul > li{

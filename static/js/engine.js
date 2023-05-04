@@ -3,7 +3,6 @@ let engine = {
 	currentdata : [],
 	fileCount : -1,
 	init : function(){
-		console.log('in init');
 		/* which page are we loading? */
 		let startup = document.getElementById('body').getAttribute('data-init-action');
 		switch(startup){
@@ -14,10 +13,25 @@ let engine = {
 			btn.addEventListener('click',function(){
 				engine.loadFiles(0,document.getElementById('searchfield').value);
 			});	
+
 			this.loadFiles();
+			this.bindKeyToElem(13,'searchfield','searchbtn');
 			break;
 			default:
 		}
+	},
+	
+	/**
+	https://stackoverflow.com/questions/6542413/bind-enter-key-to-specific-button-on-page
+	https://stackoverflow.com/questions/24552447/bind-onclick-to-enter-key
+	event.which/keycode is deprecated, so I'll need tor eplace eventually.'
+	 */
+	bindKeyToElem : function(keyId, elemId,targetId){
+		document.getElementById(elemId).onkeyup = function(event){
+			if(event.which === keyId){
+				document.getElementById(targetId).click();
+			}
+		};
 	},
 	
 	/**
@@ -35,16 +49,13 @@ let engine = {
 		if(pageNum && pageNum>0){
 			pNum = pageNum;
 		}
-		else{
-			console.log('neg pagenum! ',pageNum)
-		}
 		
 		if(pageNum >= num_pages){
 			pNum = num_pages-1;
 		}
 		/** look for pagination flags */;
 		let pageSize = document.getElementById('body').getAttribute('data-page-size');
-		console.log(pageSize);
+
 		fetch('/app/files/'+pageSize + '/' + pNum + f)
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
@@ -134,6 +145,9 @@ let engine = {
 		let _linkelem = document.createElement('a');
 		_linkelem.setAttribute('data-fileguid',fileguid);
 		if(isDownloadLink){
+			/** we also want a link back to the homepage becauss, well, because. */
+			let homelink = document.createElement('a');
+			homelink.setAttribute('href','/');
 			let _img = document.createElement('img');
 			_img.setAttribute('src','/static/images/dl-anim.gif');
 			_linkelem.setAttribute('href','/app/file/' + fileguid);
@@ -150,7 +164,15 @@ let engine = {
 				}
 				
 				engine.buildFileDetails(this.getAttribute('data-fileguid'));
+				let spinner = document.getElementById('spinner');
+				const classes = spinner.classList
+				classes.add('fish','fingers','hideme');
+				classes.remove('hidden','fingers','hideme');
 				this.parentElement.classList.add('active');
+				
+				/** and hide the boss... */
+				document.getElementById('no_selection').classList.add('hidden');
+				document.getElementById('is_selection').classList.remove('hidden');
 			});
 			_linkelem.appendChild(document.createTextNode(filename));
 		}
@@ -158,7 +180,6 @@ let engine = {
 	},
 	
 	buildFileDetails : function(fileguid){
-		console.log('get details by this: ',fileguid);
 		/** hide all headings until we know which ones to show: */
 		document.getElementById('maps_heading').classList.add('hidden');
 		document.getElementById('screenshots_heading').classList.add('hidden');
@@ -167,12 +188,11 @@ let engine = {
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
 			data = response.json();
-			console.log(data)
 			return(data);
 		})
 		.then(function(json_data){
-			console.log(json_data);
 			/** empty the containers */
+			document.getElementById('spinner').classList.add('hidden');
 			document.getElementById('detail_name').innerHTML = '';
 			document.getElementById('detail_readme').innerHTML = '';
 			document.getElementById('detail_download').innerHTML = '';
@@ -189,21 +209,25 @@ let engine = {
 				document.getElementById('detail_readme').appendChild(document.createTextNode(json_data['record_readme']));
 			}
 			
-			console.log(json_data['record_maps'])
-			if(json_data['record_maps']['data']){
-				document.getElementById('maps_heading').classList.remove('hidden');
-				document.getElementById('detail_maps').appendChild(engine.buildImagePaginator(json_data['record_maps'],'MAPS'));
-			}
-			if(json_data['record_screenshots']['data']){
-				document.getElementById('screenshots_heading').classList.remove('hidden');
-				document.getElementById('detail_screenshots').appendChild(engine.buildImagePaginator(json_data['record_screenshots'],'SCREENSHOTS'));
-			}
-			if(json_data['record_graphics']['data']){
-				document.getElementById('graphics_heading').classList.remove('hidden');
-				document.getElementById('detail_graphics').appendChild(engine.buildImagePaginator(json_data['record_graphics'],'GRAPHICS'));
+			let imageContainers = [  
+				['record_maps','maps_heading','detail_maps','MAPS'],  
+				['record_screenshots','screenshots_heading','detail_screenshots','SCREENSHOTS'],  
+				['record_graphics','graphics_heading','detail_graphics','GRAPHICS']
+			];
+
+			for(let a=0;a<imageContainers.length;a++){
+				if(json_data[imageContainers[a][0] ]['data'].length){
+					console.log(json_data[imageContainers[a][0] ]['data'].length)
+					document.getElementById(imageContainers[a][1]).classList.remove('hidden');
+					if(json_data['record_maps']['data'] !== 'error'){
+						document.getElementById(imageContainers[a][2]).appendChild(engine.buildImagePaginator(json_data[imageContainers[a][0]],imageContainers[a][3]));
+					}
+					else{
+						document.getElementById(imageContainers[a][2]).appendChild(document.createTextNode('path not found! Check config.'));
+					}
+				}
 			}
 		});
-		/** get the heading block and pushin the filename (trimmed) */
 	},
 	
 	/**  */
@@ -218,62 +242,113 @@ let engine = {
 				_ul.appendChild(_li);
 			}
 		}
-		
 		return(_ul);
 	},
 	
 	/** rather than build all image up front, build ONE image and a paginator */
 	buildImagePaginator : function(data,set){
-		console.log(data);
-		/** pusg the current data to the working object: */
+		/** push the current data to the working object: */
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
-		if(data.data && data.data.length>0){
-			let _imgwrapper = document.createElement('div');
-			let _img = this.buildImage(data.data[0]);
-			_img.setAttribute('id','currentimage_' + set);
-			_imgwrapper.appendChild(_img);
-			
-			let _paginatorwrapper = document.createElement('div');
-			let _ul = document.createElement('ul');
-			
-			if(data.data.length > 1){
-				for(let a=0;a<data.data.length;a++){
-					let _li = document.createElement('li');
-					let _a = document.createElement('span');
-					_a.setAttribute('data-itemnum',a);
-					_a.setAttribute('data-set',set);
-					if(a===0){
-						_a.setAttribute('style','font-weight: bold;');
-					}
-					/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
-					_a.appendChild(document.createTextNode(a));
-					_li.appendChild(_a);
-					_ul.appendChild(_li);
-					
-					_a.addEventListener('click',function(){
-						for (const elem of this.parentElement.parentElement.childNodes){
-							console.log(elem)
-							elem.firstChild.setAttribute('style','');
+		if(data['data'] === 'error'){
+			console.log('error')
+		}
+		else{
+			if(data.data && data.data.length>0){
+				let _imgwrapper = document.createElement('div');
+				
+				let _mapname = this.buildMapName(data.data[0],set)
+				console.log(_mapname);
+				if(_mapname){
+					_imgwrapper.appendChild(_mapname);
+				}
+				
+				let _img = this.buildImage(data.data[0]);
+				_img.setAttribute('id','currentimage_' + set);
+				_imgwrapper.appendChild(_img);
+				//need to iterate over this
+
+				let _paginatorwrapper = document.createElement('div');
+				let _ul = document.createElement('ul');
+				
+				if(data.data.length > 1){
+					for(let a=0;a<data.data.length;a++){
+						let _li = document.createElement('li');
+						let _a = document.createElement('span');
+						_a.setAttribute('data-itemnum',a);
+						_a.setAttribute('data-set',set);
+						if(a===0){
+							_a.setAttribute('style','font-weight: bold;');
 						}
-						let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
-						img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
-						this.setAttribute('style','font-weight:bold;')
-					});
-				}				
+						/** https://stackoverflow.com/questions/3252730/how-to-prevent-a-click-on-a-link-from-jumping-to-top-of-page */
+						/* append map name, if not null */
+						//console.log(data.data[a].nicename);
+						// this may never be true:
+						//let linktext = a;
+						//if(data.data[a].nicename){
+						//	linktext = data.data[a].nicename;
+						//}
+						
+						_a.appendChild(document.createTextNode(a));
+						// _a.appendChild(document.createTextNode(linktext));
+						_li.appendChild(_a);
+						_ul.appendChild(_li);
+						
+						_a.addEventListener('click',function(){
+							// cgi2-alpha12.wad
+							console.log('clicking map index link');
+							for (const elem of this.parentElement.parentElement.childNodes){
+								elem.firstChild.setAttribute('style','');
+							}
+							let img = document.getElementById('currentimage_'+this.getAttribute('data-set'))
+							img.setAttribute('src','data:image/png;base64,'+engine.currentdata[this.getAttribute('data-set')].data[parseInt(this.getAttribute('data-itemnum'))].b64);
+							this.setAttribute('style','font-weight:bold;');
+							
+							// and this needs to reset the map name, if present()
+							console.log(set, engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
+							
+							// need to account for non-existent data
+							if(set === 'MAPS'){
+								let map_nicename = document.querySelectorAll('[data-id="map-nicename"]');
+								console.log(map_nicename);
+								for(let elem of map_nicename){
+									console.log(elem);
+									elem.innerHTML = '';
+									elem.appendChild(document.createTextNode( engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename ))
+								}
+								// map_nicename.innerHTML = engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename;
+							}
+						});
+					}				
+				}
+				_paginatorwrapper.appendChild(_ul);
+				_wrapper.appendChild(_paginatorwrapper);
+				console.log(_paginatorwrapper);
+				_wrapper.appendChild(_imgwrapper)
 			}
-			_paginatorwrapper.appendChild(_ul);
-			_wrapper.appendChild(_paginatorwrapper);
-			_wrapper.appendChild(_imgwrapper)
 		}
 		return(_wrapper);
 	},
 
 	buildImage : function(data){
+		console.log(data)
 		let _img = document.createElement('img');
 		_img.setAttribute('title',data['file']);
 		_img.setAttribute('src','data:image/png;base64,'+data['b64']);
 		return(_img);
+	},
+	
+	buildMapName : function(data,set){
+		console.log(data,set);
+		if(data['nicename'] && set === 'MAPS'){
+			let _mapname = document.createElement('h4');
+			_mapname.setAttribute('data-id','map-nicename');
+			_mapname.appendChild(document.createTextNode(data['nicename']));
+			return(_mapname);
+		}
+		else{
+			return(null);
+		}
 	}
 }
 console.log('script loaded');
