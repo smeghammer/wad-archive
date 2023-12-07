@@ -12,3 +12,8 @@ TODO:
  - in LH list, highlight the selected entry
  - catch and alert if archive is not found
  - TEST UNC path!!
+
+# venv
+
+  - `> source bin/activate`
+  - `> deactivate`
