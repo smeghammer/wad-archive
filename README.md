@@ -22,3 +22,14 @@ TODO:
   ## NFS
   https://github.com/sahlberg/libnfs-python - this one?
   https://pypi.org/project/pyNfsClient/
+
+  or, mount an NFS share?
+  https://linuxize.com/post/how-to-mount-an-nfs-share-in-linux/
+in venv...
+  > sudo apt install nfs-common
+  > sudo mkdir /var/wad-archive-mount
+  > sudo mount -t nfs 192.168.1.20://mnt/USB/USB1_c2/wad-archive-dump /var/wad-archive-mount
+
+  The above will temporarily mount until next reboot. 
+  IMPORTANT!
+  Your NAS needs to export an NFS share
