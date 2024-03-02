@@ -1,28 +1,31 @@
 /* global styles */
 @font-face {
     font-family: "AmazDooMLeft";
-    src: url("/fonts/AmazDooMLeft.woff2") format('woff2'),
-        url("/fonts/AmazDooMLeft.woff") format('woff'),
-        url("/fonts/AmazDooMLeft.ttf") format('truetype'),
-        url("/fonts/AmazDooMLeft.svg") format('svg');
+    src: url("/static/fonts/AmazDooMLeft.woff2") format('woff2'),
+        url("/static/fonts/AmazDooMLeft.woff") format('woff'),
+        url("/static/fonts/AmazDooMLeft.ttf") format('truetype'),
+        url("/static/fonts/AmazDooMLeft.svg") format('svg');
 }
 @font-face {
     font-family: "AmazDooMLeftOutline";
-     src: url("/fonts/AmazDooMLeftOutline.svg") format('svg');
+    src: url("/static/fonts/AmazDooMLeftOutline.woff2") format('woff2'), 
+    url("/static/fonts/AmazDooMLeftOutline.woff") format('woff'), 
+    url("/static/fonts/AmazDooMLeftOutline.ttf") format('truetype'),
+   url("/static/fonts/AmazDooMLeftOutline.svg") format('svg');
 }
 @font-face {
     font-family: "AmazDooMRight";
-    src: url("/fonts/AmazDooMRight.woff") format('woff');
+    src: url("/static/fonts/AmazDooMRight.woff") format('woff');
 }
 @font-face {
     font-family: "AmazDooMRight2";
-    src: url("/fonts/AmazDooMRight2.woff") format('woff');
+    src: url("/static/fonts/AmazDooMRight2.woff") format('woff');
 }
 @font-face {
     font-family: "AmazDooMRightOutline";
-    src: url("/fonts/AmazDooMRightOutline.woff") format('woff');
+    src: url("/static/fonts/AmazDooMRightOutline.woff") format('woff');
 }
 @font-face {
     font-family: "DooM";
-    src: url("/fonts/DooM.woff") format('woff');
+    src: url("/static/fonts/DooM.woff") format('woff');
 }
