@@ -17,3 +17,8 @@ TODO:
 
   - `> source bin/activate`
   - `> deactivate`
+
+
+  ## NFS
+  https://github.com/sahlberg/libnfs-python - this one?
+  https://pypi.org/project/pyNfsClient/
