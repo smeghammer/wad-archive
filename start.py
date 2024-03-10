@@ -25,10 +25,18 @@ def approot():
     return "Application API root"
 
 # https://www.folkstalk.com/2022/10/flask-arguments-in-url-with-code-examples.html
-@app.route('/app/files/<int:page_size>/<int:page_num>')
-def pagedfiles(page_size,page_num):
+@app.route('/app/files/<int:page_num>')
+def pagedfiles(page_num):
     # endpoint for returning a paged list of filenames
-    filter = request.args.get('filter', default = None, type = str)
+    # filter = request.args.get('filter', default = None, type = str)
+    result = mware.files(settings['records_per_page'],page_num) # , filter)
+    return result
+
+# https://www.folkstalk.com/2022/10/flask-arguments-in-url-with-code-examples.html
+@app.route('/app/files/<int:page_num>/<string:filter>')
+def pagedfilesfiltered(page_num,filter):
+    # endpoint for returning a paged list of filenames
+    # filter = request.args.get('filter', default = None, type = str)
     result = mware.files(settings['records_per_page'],page_num, filter)
     return result
 
@@ -56,6 +64,11 @@ def readme(guid):
     # endpoint for returning readme. will be incorporated into app/file/details/<guid> complex return structure
     return mware.readme(guid)
 
+@app.route('/app/file/namefromreadme/<guid>')
+def namefromreadme(guid):
+    # endpoint for returning readme. will be incorporated into app/file/details/<guid> complex return structure
+    return mware.namefromreadme(guid)
+
 #https://stackoverflow.com/questions/11017466/flask-to-return-image-stored-in-database
 #https://stackoverflow.com/questions/3715493/encoding-an-image-file-with-base64
 @app.route('/app/file/screenshots/<guid>')
@@ -77,5 +90,5 @@ def graphics(guid):
     # returns a list of b64 encoded images
     return mware.b64imagelist(guid,'GRAPHICS')
 
-app.run()
+app.run(debug=True)
 

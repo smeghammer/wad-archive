@@ -12,11 +12,13 @@ class WadArchiveDatabase():
     def getPagedFilenames(self, page_size,page_num, filter):
         ''' paged '''
         filter = filter
+        ''' some entries do not have a filename at all (the filenames array field is empty) '''
         pagination_data = {
             'item_count' : self.getFilecount(filter),
             'page_num' : page_num,
             'page_size' : page_size,
-            'page_data' : list(self.db['filenames'].find(filter).sort('_id',1).skip(page_size * page_num).limit(page_size))
+            # 'page_data' : list(self.db['filenames'].find(filter).sort('_id',1).skip(page_size * page_num).limit(page_size))
+            'page_data' : list(self.db['filenames'].find(filter).sort('filenames.0',1).skip(page_size * page_num).limit(page_size)),
             }
         return pagination_data
     

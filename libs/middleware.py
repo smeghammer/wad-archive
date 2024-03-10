@@ -1,6 +1,7 @@
 import io
 import os
 import base64
+import re
 from os import path
 import gzip
 import zipfile
@@ -18,15 +19,19 @@ class Middleware():
     
     def files(self,page_size=50,page_num=0, filter=None):
         # If we find filter, build regex to search against filename[0]
-        f = {}
+        f = {'filenames.0':{'$exists':1}}
         if filter:
-            f = {'filenames.0':{'$regex':filter}}
+            # f = {'filenames.0':{'$regex':filter}}
+            f = {'filenames.0':{'$exists':1, '$regex':filter}}
+        _files = self.db.getPagedFilenames(page_size,page_num, f)
+        # print(_files)
         return self.db.getPagedFilenames(page_size,page_num, f)
     
     def details(self,guid):
+        # breakpoint()
         details = {
             'record_identifier':guid,
-            'record_filename':self.db.getFilename(guid),
+            'record_filename':self.getFilename(guid),
             'record_path':self.path(guid),
             'record_archive_path':self.relative_path(guid).replace('\\','/'),
             'record_readme':self.readme(guid),
@@ -34,7 +39,16 @@ class Middleware():
             'record_maps' : self.b64imagelist_archived(guid, 'MAPS'),
             'record_screenshots' : self.b64imagelist_archived(guid, 'SCREENSHOTS')
         }
+        print(details)
         return details
+    
+    def getFilename(self,guid):
+        _fname = self.db.getFilename(guid)
+        print(_fname)
+        if _fname:
+            return _fname
+        return self.namefromreadme(guid)['name']
+        
     
     #  un-gzip the archived file. Needed when returing a file directly form the zipped archiove:
     def get_uncompressed_file(self,compressed_file):
@@ -47,7 +61,7 @@ class Middleware():
         ''' I can get the type from the filenames extension '''
         ''' Replace this loading from directory to loading from a zip archive,
         so we don't need to unzip everything first '''
-        file_name = self.db.getFilename(guid)
+        file_name = self.getFilename(guid)
         file_dir = guid[0:2:1]
         file_name_prefix = guid[2:]
         archives_path = self.path(guid)
@@ -124,6 +138,18 @@ class Middleware():
     def readme(self,guid):
         return self.db.readme(guid)
     
+    def namefromreadme(self, guid):
+        textfile = self.readme(guid)
+        # look for `title:`
+        lines = textfile.splitlines()
+        for line in lines:
+            print(line)
+            if re.match(r"title",line, re.IGNORECASE):
+                return {"found":True, "name":line.split(':')[1].strip()}
+        return {"found":False,"name":"[no map name found!]"}
+        # print(lines)
+                               
+    
     def path(self,guid):
         ''' build full filepath to uncompressed archive directory'''
         file_name = self.db.getFilename(guid)
@@ -139,4 +165,8 @@ class Middleware():
         file_name_prefix = guid[2:]
         zip_archives_path = path.join(guid[0:2:1],guid[2:])
         return zip_archives_path
+    
+    def get_name_from_readme(self, guid):
+        return
+    
     
