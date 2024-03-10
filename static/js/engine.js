@@ -41,10 +41,11 @@ let engine = {
 		f=''
 		if(filter)
 		{
-			f='?filter='+filter
+			// f='?filter='+filter
+			f=`/${filter}`;
 		}
-		// console.log('loadfiles filter: ', filter)
-		// console.log('loadfiles num pages: ', num_pages)
+		console.log('loadfiles filter: ', filter)
+		console.log('loadfiles num pages: ', num_pages)
 		pNum = 0;
 		if(pageNum && pageNum>0){
 			pNum = pageNum;
@@ -57,9 +58,12 @@ let engine = {
 		// let pageSize = document.getElementById('body').getAttribute('data-page-size');
 
 		// fetch('/app/files/'+pageSize + '/' + pNum + f)
-		fetch('/app/files/' + pNum + f)
+		// fetch('/app/files/' + pNum + f)
+		
+		fetch(`/app/files/${pNum}${f}`)
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
+			console.log(`/app/files/${pNum}${f}`);
 			data = response.json();
 			return(data);
 		})
