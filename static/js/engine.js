@@ -43,8 +43,8 @@ let engine = {
 		{
 			f='?filter='+filter
 		}
-		console.log('loadfiles filter: ', filter)
-		console.log('loadfiles num pages: ', num_pages)
+		// console.log('loadfiles filter: ', filter)
+		// console.log('loadfiles num pages: ', num_pages)
 		pNum = 0;
 		if(pageNum && pageNum>0){
 			pNum = pageNum;
@@ -54,16 +54,17 @@ let engine = {
 			pNum = num_pages-1;
 		}
 		/** look for pagination flags */;
-		let pageSize = document.getElementById('body').getAttribute('data-page-size');
+		// let pageSize = document.getElementById('body').getAttribute('data-page-size');
 
-		fetch('/app/files/'+pageSize + '/' + pNum + f)
+		// fetch('/app/files/'+pageSize + '/' + pNum + f)
+		fetch('/app/files/' + pNum + f)
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
 			data = response.json();
 			return(data);
 		})
 		.then(function(json_data){
-			console.log(json_data);
+			// console.log(json_data);
 			engine.buildFileLinks(json_data);
 			engine.buildPaginator(json_data.page_num,json_data.page_size,json_data.item_count);
 		});
@@ -100,7 +101,7 @@ let engine = {
 		nexttag2.appendChild(document.createTextNode(' >> '));
 		filecount.innerHTML = '';
 		filecount.appendChild(document.createTextNode(recordCount + ' files'));
-		console.log(currentPage, pageSize,num_pages, recordCount);
+		// console.log(currentPage, pageSize,num_pages, recordCount);
 
 		//https://gomakethings.com/listening-for-click-events-with-vanilla-javascript/
 		prevtag.addEventListener('click',function(){
@@ -134,6 +135,40 @@ let engine = {
 		elem.innerHTML = "";
 		let _ul = document.createElement('ul');
 		for(let counter = 0; counter<fileData.page_data.length;counter++){
+			if(!fileData.page_data[counter]['filenames'][0]){
+				console.log(`try textfile lookup for null filenames! ${fileData.page_data[counter]._id}`);
+				/**	
+		fetch('/app/files/' + pNum + f)
+		.then(function(response){
+			data = response.json();
+			return(data);
+		})
+		.then(function(json_data){
+			// console.log(json_data);
+			engine.buildFileLinks(json_data);
+			engine.buildPaginator(json_data.page_num,json_data.page_size,json_data.item_count);
+		});
+				 */
+				// fetch(`/app/file/readme/${fileData.page_data[counter]._id}`).
+				// then(function(response){
+				// 	data = response.text();
+				// 	return(data);
+				// 	//console.log(data)
+				// }).
+				// then(function(json_data){
+				// 	console.log(json_data);
+				// })
+					
+				
+				/** 
+				 * Here, we need to call the /app/file/readme/<guid> endpoint (with await) IF filenames[0]
+				 * is undefined. The resulting text file (the readme) has a sort-of standard structure, and
+				 * I should be able to parse out a map name from it...
+				 * 
+				 * This is only relevant if the filename IS undefined - there seem to be about 50 of them
+				 * that exhibit this missing data.
+				 */
+			}
 			let test = document.createElement('li');
 			test.appendChild(this.buildFileLink(fileData.page_data[counter]._id,fileData.page_data[counter]['filenames'][0]));
 			_ul.appendChild(test);
@@ -188,9 +223,11 @@ let engine = {
 		.then(function(response){
 			/** NOTE: return the filecount as part of the pagination response data! */
 			data = response.json();
+			
 			return(data);
 		})
 		.then(function(json_data){
+			// console.log(json_data);
 			/** empty the containers */
 			document.getElementById('spinner').classList.add('hidden');
 			document.getElementById('detail_name').innerHTML = '';
@@ -217,7 +254,7 @@ let engine = {
 
 			for(let a=0;a<imageContainers.length;a++){
 				if(json_data[imageContainers[a][0] ]['data'].length){
-					console.log(json_data[imageContainers[a][0] ]['data'].length)
+					// console.log(json_data[imageContainers[a][0] ]['data'].length)
 					document.getElementById(imageContainers[a][1]).classList.remove('hidden');
 					if(json_data['record_maps']['data'] !== 'error'){
 						document.getElementById(imageContainers[a][2]).appendChild(engine.buildImagePaginator(json_data[imageContainers[a][0]],imageContainers[a][3]));
@@ -232,7 +269,7 @@ let engine = {
 	
 	/**  */
 	buildImages : function(data){
-		console.log(data);
+		// console.log(data);
 		let _ul = document.createElement('ul');
 		if(data.data && data.data.length){
 			for(a=0;a<data.data.length;a++){
@@ -251,14 +288,14 @@ let engine = {
 		this.currentdata[set] = data;
 		let _wrapper = document.createElement('div');
 		if(data['data'] === 'error'){
-			console.log('error')
+			// console.log('error')
 		}
 		else{
 			if(data.data && data.data.length>0){
 				let _imgwrapper = document.createElement('div');
 				
 				let _mapname = this.buildMapName(data.data[0],set)
-				console.log(_mapname);
+				// console.log(_mapname);
 				if(_mapname){
 					_imgwrapper.appendChild(_mapname);
 				}
@@ -296,7 +333,7 @@ let engine = {
 						
 						_a.addEventListener('click',function(){
 							// cgi2-alpha12.wad
-							console.log('clicking map index link');
+							// console.log('clicking map index link');
 							for (const elem of this.parentElement.parentElement.childNodes){
 								elem.firstChild.setAttribute('style','');
 							}
@@ -305,14 +342,14 @@ let engine = {
 							this.setAttribute('style','font-weight:bold;');
 							
 							// and this needs to reset the map name, if present()
-							console.log(set, engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
+							// console.log(set, engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename)
 							
 							// need to account for non-existent data
 							if(set === 'MAPS'){
 								let map_nicename = document.querySelectorAll('[data-id="map-nicename"]');
-								console.log(map_nicename);
+								// console.log(map_nicename);
 								for(let elem of map_nicename){
-									console.log(elem);
+									// console.log(elem);
 									elem.innerHTML = '';
 									elem.appendChild(document.createTextNode( engine.currentdata['MAPS'].data[parseInt(this.getAttribute('data-itemnum'))].nicename ))
 								}
@@ -323,7 +360,7 @@ let engine = {
 				}
 				_paginatorwrapper.appendChild(_ul);
 				_wrapper.appendChild(_paginatorwrapper);
-				console.log(_paginatorwrapper);
+				// console.log(_paginatorwrapper);
 				_wrapper.appendChild(_imgwrapper)
 			}
 		}
@@ -331,7 +368,7 @@ let engine = {
 	},
 
 	buildImage : function(data){
-		console.log(data)
+		// console.log(data)
 		let _img = document.createElement('img');
 		_img.setAttribute('title',data['file']);
 		_img.setAttribute('src','data:image/png;base64,'+data['b64']);
@@ -339,7 +376,7 @@ let engine = {
 	},
 	
 	buildMapName : function(data,set){
-		console.log(data,set);
+		// console.log(data,set);
 		if(data['nicename'] && set === 'MAPS'){
 			let _mapname = document.createElement('h4');
 			_mapname.setAttribute('data-id','map-nicename');
