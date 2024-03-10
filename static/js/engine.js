@@ -15,7 +15,7 @@ let engine = {
 			});	
 
 			this.loadFiles();
-			this.bindKeyToElem(13,'searchfield','searchbtn');
+			this.bindKeyToElem('Enter','searchfield','searchbtn');
 			break;
 			default:
 		}
@@ -28,7 +28,8 @@ let engine = {
 	 */
 	bindKeyToElem : function(keyId, elemId,targetId){
 		document.getElementById(elemId).onkeyup = function(event){
-			if(event.which === keyId){
+			// console.log(event.key);
+			if(event.key === keyId){
 				document.getElementById(targetId).click();
 			}
 		};
@@ -38,10 +39,20 @@ let engine = {
 	 * https://stackoverflow.com/questions/50776445/vanilla-javascript-version-of-ajax
 	 */
 	loadFiles: function(pageNum,filter,num_pages){
+		
+		/** Hide current list */
+		/** empty the container */
+		elem = document.querySelector('#filelist > div.files')
+		elem.innerHTML = "";
+
+		/** show spinner */
+		let spinner = document.getElementById('spinner2');
+		const classes = spinner.classList
+		classes.add('hideme');
+		classes.remove('hidden','hideme');
 		f=''
 		if(filter)
 		{
-			// f='?filter='+filter
 			f=`/${filter}`;
 		}
 		console.log('loadfiles filter: ', filter)
@@ -54,21 +65,18 @@ let engine = {
 		if(pageNum >= num_pages){
 			pNum = num_pages-1;
 		}
-		/** look for pagination flags */;
-		// let pageSize = document.getElementById('body').getAttribute('data-page-size');
-
-		// fetch('/app/files/'+pageSize + '/' + pNum + f)
-		// fetch('/app/files/' + pNum + f)
-		
+		/** look for pagination flags */;		
 		fetch(`/app/files/${pNum}${f}`)
 		.then(function(response){
+
 			/** NOTE: return the filecount as part of the pagination response data! */
 			console.log(`/app/files/${pNum}${f}`);
 			data = response.json();
 			return(data);
 		})
 		.then(function(json_data){
-			// console.log(json_data);
+			/** hide spinner */
+			document.getElementById('spinner2').classList.add('hidden');
 			engine.buildFileLinks(json_data);
 			engine.buildPaginator(json_data.page_num,json_data.page_size,json_data.item_count);
 		});
@@ -134,9 +142,9 @@ let engine = {
 	},
 	
 	buildFileLinks : function(fileData){
-		/** empty the container */
-		let elem = document.getElementById('filelist')
-		elem.innerHTML = "";
+		// /** empty the container */
+		// elem = document.querySelector('#filelist > div.files')
+		// elem.innerHTML = "";
 		let _ul = document.createElement('ul');
 		for(let counter = 0; counter<fileData.page_data.length;counter++){
 			if(!fileData.page_data[counter]['filenames'][0]){

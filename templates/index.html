@@ -16,7 +16,11 @@
 		<input id="searchbtn" type="button" name="Filter" value="Filter" title="Filter file names by this value"/>
 		</div>
 		<div id="filelist">
-		
+			<div id="spinner2" class="hidden centred">
+				<span class="loader"></span><!-- see https://cssloaders.github.io/ -->
+				<!-- img src="/static/images/spinner.gif" / -->
+			</div>
+			<div class="files"></div>
 		</div>
 		<div id="filecount">
 		
@@ -25,7 +29,10 @@
 		
 		</div>
 		<div class="content paddedredborder">
-			<div id="spinner" class="hidden"><img src="/static/images/spinner.gif" /></div>
+			<div id="spinner" class="hidden centred">
+				<span class="loader"></span><!-- see https://cssloaders.github.io/ -->
+				<!-- <img src="/static/images/spinner.gif" /> -->
+			</div>
 			<div id="no_selection">
 				<img src="/static/images/BOSSB1.png" alt="Who's the boss?" title="Who's the boss?" />
 			</div>
