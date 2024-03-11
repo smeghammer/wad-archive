@@ -24,7 +24,6 @@ class Middleware():
             # f = {'filenames.0':{'$regex':filter}}
             f = {'filenames.0':{'$exists':1, '$regex':filter}}
         _files = self.db.getPagedFilenames(page_size,page_num, f)
-        # print(_files)
         return self.db.getPagedFilenames(page_size,page_num, f)
     
     def details(self,guid):
@@ -39,12 +38,10 @@ class Middleware():
             'record_maps' : self.b64imagelist_archived(guid, 'MAPS'),
             'record_screenshots' : self.b64imagelist_archived(guid, 'SCREENSHOTS')
         }
-        print(details)
         return details
     
     def getFilename(self,guid):
         _fname = self.db.getFilename(guid)
-        print(_fname)
         if _fname:
             return _fname
         return self.namefromreadme(guid)['name']
@@ -143,11 +140,9 @@ class Middleware():
         # look for `title:`
         lines = textfile.splitlines()
         for line in lines:
-            print(line)
             if re.match(r"title",line, re.IGNORECASE):
                 return {"found":True, "name":line.split(':')[1].strip()}
         return {"found":False,"name":"[no map name found!]"}
-        # print(lines)
                                
     
     def path(self,guid):
